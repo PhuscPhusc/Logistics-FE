@@ -1,0 +1,88 @@
+@page "/adminhomepage"
+@attribute [Authorize(Roles="System_Admin")]
+@using FELogisticsProject.Components
+
+<div class="d-flex flex-column">
+  <!-- Navbar luôn hiển thị -->
+  <div class="d-block d-lg-none ">
+    <AdminNavbarLayout />
+  </div>
+
+  <div class="d-flex">
+    <!-- Sidebar desktop -->
+    <div class="d-none d-lg-block">
+      <AdminSidebarLayoutFull />
+    </div>
+
+
+    <!-- Nội dung chính -->
+    <div class="flex-grow-1 p-3">
+      <div class="container-fluid p-3">
+        <!-- Header -->
+        <div class="mb-3">
+          <h5>Xin chào <span class="text-danger">Lê Nguyễn Thiên Phúc</span></h5>
+        </div>
+
+        <div class="row">
+          <!-- Thống kê đơn hàng -->
+          <div class="col-lg-8">
+            <div class="card mb-3">
+              <div class="card-header fw-bold">THỐNG KÊ ĐƠN HÀNG</div>
+              <div class="card-body">
+                <!-- Chart placeholder -->
+                <div class="border rounded p-5 text-center text-muted">
+                  Biểu đồ giao thành công / đã hoàn
+                </div>
+                <div class="mt-3 d-flex justify-content-around">
+                  <div class="text-success">0 (0%) - Giao thành công</div>
+                  <div class="text-danger">0 - Đã hoàn</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top sản lượng -->
+          <div class="col-lg-4">
+            <div class="card mb-3">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span>TOP 10 SẢN LƯỢNG</span>
+                <span class="small text-muted">23/07/2026 - 05/08/2026</span>
+              </div>
+              <div class="card-body">
+                <!-- Chart placeholder -->
+                <div class="border rounded p-5 text-center text-muted">
+                  Biểu đồ tròn sản lượng
+                </div>
+                <div class="mt-2 text-end small text-muted">
+                  Cập nhật lần cuối lúc 20:09
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner -->
+        <div class="card mt-3">
+          <div class="card-body d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h6 class="fw-bold text-primary">LINH HOẠT DÒNG TIỀN TÀI CHÍNH CHỦ ĐỘNG</h6>
+              <p class="small text-muted">Giải pháp quản lý tài chính cho bạn</p>
+              <div class="btn-group">
+                <button class="btn btn-outline-danger">Rút tiền COD</button>
+                <button class="btn btn-outline-primary">Quản lý dòng tiền</button>
+                <button class="btn btn-outline-success">Thanh toán nợ cước</button>
+              </div>
+            </div>
+            <div class="ms-3">
+              <!-- Placeholder hình minh họa -->
+              <div class="border rounded p-5 text-center text-muted">
+                Hình minh họa
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

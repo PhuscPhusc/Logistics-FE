@@ -1,0 +1,33 @@
+@using FELogisticsProject.Pages
+<CascadingAuthenticationState>
+
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            @* <RouteView RouteData="@routeData" /><!-- Nếu chưa dùng đến <AuthorizeRouteView> thì dùng <RouteView> -->
+            *@
+
+            <AuthorizeRouteView RouteData="@routeData">
+                <NotAuthorized>
+                    <Index />
+                </NotAuthorized>
+
+            </AuthorizeRouteView>
+
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+
+            
+        </Found>
+        <!-- Nếu chưa có bất kì component làm layout thì comment <NotFound> để tránh báo lỗi -->
+        @* <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView>
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound> *@
+        <NotFound>
+            <LayoutView>
+                <p>Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

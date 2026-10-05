@@ -1,0 +1,311 @@
+@page "/createshipment"
+
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserServices userServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+
+
+
+<div class="d-flex flex-column">
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <div class="d-none d-lg-block">
+            <CustomerSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="text-primary mb-4">
+                Tạo đơn vận chuyển mới
+            </h2>
+
+            <!-- Thông báo -->
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> @successMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> @errorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <EditForm Model="@viewModel" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                @* <ValidationSummary /> *@
+
+                <!-- Thông tin người gửi -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        Thông tin người gửi
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label">Tên người gửi</label>
+                                <InputText class="form-control" @bind-Value="viewModel.TenNguoiGui" />
+
+                                <ValidationMessage For="@(() => viewModel.TenNguoiGui)" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Địa chỉ người gửi</label>
+                                <InputText class="form-control" @bind-Value="viewModel.DiaChiNguoiGui" />
+
+                                <ValidationMessage For="@(() => viewModel.DiaChiNguoiGui)" />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin người nhận -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        Thông tin người nhận
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label">Tên người nhận</label>
+                                <InputText class="form-control" @bind-Value="viewModel.TenNguoiNhan" />
+
+                                <ValidationMessage For="@(() => viewModel.TenNguoiNhan)" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Số điện thoại người nhận</label>
+                                <InputText class="form-control" @bind-Value="viewModel.SoDienThoaiNguoiNhan" />
+
+                                <ValidationMessage For="@(() => viewModel.SoDienThoaiNguoiNhan)" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Địa chỉ người nhận</label>
+                                <InputText class="form-control" @bind-Value="viewModel.DiaChiNguoiNhan" />
+
+                                <ValidationMessage For="@(() => viewModel.DiaChiNguoiNhan)" />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin vận chuyển -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        Thông tin vận chuyển
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Tổng quãng đường (Km)
+                                </label>
+
+                                <InputNumber class="form-control" @bind-Value="viewModel.TongQuangDuong" />
+
+                                <ValidationMessage For="@(() => viewModel.TongQuangDuong)" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Dữ liệu mở rộng
+                                </label>
+
+                                <InputText class="form-control" @bind-Value="viewModel.DuLieuMoRong" />
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Danh sách kiện hàng -->
+                <div class="card shadow-sm mb-4">
+
+                    <div class="card-header bg-warning">
+                        Danh sách kiện hàng
+                    </div>
+
+                    <div class="card-body">
+
+                        <table class="table table-bordered table-hover align-middle">
+
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tên hàng</th>
+                                    <th>Mô tả</th>
+                                    <th>Khối lượng(kg)</th>
+                                    <th>Ghi chú</th>
+                                    <th width="120">Thao tác</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var item in viewModel.dsKienHangAdd.Select((value, index) => new
+                                {
+                                    value,
+                                    index
+                                }))
+                                {
+                                    <tr>
+
+                                        <td>
+                                            <InputText class="form-control" @bind-Value="item.value.TenHang" />
+
+                                            <ValidationMessage For="@(() => item.value.TenHang)" />
+                                        </td>
+
+                                        <td>
+                                            <InputText class="form-control" @bind-Value="item.value.MoTa" />
+
+                                            <ValidationMessage For="@(() => item.value.MoTa)" />
+                                        </td>
+
+                                        <td>
+                                            <InputNumber class="form-control" @bind-Value="item.value.KhoiLuong" />
+
+                                            <ValidationMessage For="@(() => item.value.KhoiLuong)" />
+                                        </td>
+
+                                        <td>
+                                            <InputText class="form-control" @bind-Value="item.value.GhiChu" />
+
+                                            <ValidationMessage For="@(() => item.value.GhiChu)" />
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                        <button type="button" class="btn btn-outline-success" @onclick="AddKienHang">
+                            <i class="fas fa-plus"></i>
+                            Thêm kiện hàng
+                        </button>
+
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <button type="reset" class="btn btn-secondary">
+                        Làm mới
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        Tạo đơn vận chuyển
+                    </button>
+
+                </div>
+
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+
+    private CreateShipmentViewModel viewModel = new CreateShipmentViewModel();
+    private string? successMessage;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userServices.OnChange += StateHasChanged;
+
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            navManager.NavigateTo("/", true);
+            return;
+        }
+
+        // dsKienHangAdd chứa danh sách kiện hàng thuộc đơn vận chuyển.
+        // Mỗi phần tử tương ứng với 1 dòng nhập liệu trên giao diện.
+        // Cần tạo sẵn 1 phần tử để khi mở form có ngay 1 dòng nhập kiện hàng.
+        if (!viewModel.dsKienHangAdd.Any())
+        {
+            viewModel.dsKienHangAdd.Add(new AddKienHangDTO());
+        }
+    }
+
+    // Thêm 1 kiện hàng mới vào danh sách.
+    // Giao diện sẽ render thêm 1 dòng nhập liệu.
+    private void AddKienHang()
+    {
+        viewModel.dsKienHangAdd.Add(new AddKienHangDTO());
+    }
+
+    // Xóa kiện hàng theo vị trí trong danh sách.
+    // Giữ lại tối thiểu 1 dòng để người dùng luôn có chỗ nhập dữ liệu.
+    private void RemoveKienHang(int index)
+    {
+        if (viewModel.dsKienHangAdd.Count > 1)
+        {
+            viewModel.dsKienHangAdd.RemoveAt(index);
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            navManager.NavigateTo("/", true);
+            return;
+        }
+
+        bool result = await userServices.AddDonVanChuyen(token, viewModel);
+
+        if (result)
+        {
+            // Thông báo thành công hoặc mở modal
+            @* Console.WriteLine("Tạo đơn vận chuyển thành công"); *@
+            successMessage = "Tạo đơn vận chuyển thành công!";
+            errorMessage = null;
+        }
+        else
+        {
+            errorMessage = $"Tạo đơn vận chuyển không thành công!";
+            successMessage = null;
+        }
+    }
+
+    
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userServices.OnChange -= StateHasChanged;
+    }
+}

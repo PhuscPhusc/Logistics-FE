@@ -1,0 +1,148 @@
+@* page hiển thị list User *@
+@page "/users"
+@attribute [Authorize(Roles = "System_Admin")]
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject UserAdminServices userServices;
+@inject NavigationManager _navigationManager;
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="flex-grow-1 p-3">
+            <div class="container my-3">
+                <EditForm Model="new UsersViewModel()" OnValidSubmit="HandleSearch" class="input-group" action="/search"
+                          method="get">
+                    <!-- Icon kính lúp cũng là nút submit -->
+                    <button class="btn btn-outline-secondary" type="submit" @onclick="HandleSearch">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <!-- Ô nhập liệu -->
+                    <input type="text" class="form-control" name="q" placeholder="Tra cứu người dùng theo từ khóa"
+                           @bind="tuKhoa" />
+                    
+                    <!-- Nút tìm kiếm -->
+                    <button class="btn btn-primary" type="submit" @onclick="HandleSearch">Tìm kiếm</button>
+                </EditForm>
+            </div>
+            <h4 class="mb-4 text-primary">Thông tin người dùng</h4>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tên đăng nhập</th>
+                            <th>Họ tên</th>
+                            <th>Biệt danh</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th>Địa chỉ</th>
+                            <th>Ngày sinh</th>
+                            <th>Ngày tạo</th>
+                            <th>Chức năng khác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in userServices.usersViewModels)
+                        {
+                            <tr>
+                                <td><span class="badge bg-success">@user.TenDangNhap</span></td>
+                                <td>@user.HoTen</td>
+                                <td><span class="text-muted">@user.BietDanh</span></td>
+                                <td><span class="badge bg-success">@user.Email</span></td>
+                                <td class="text-muted">@user.SoDienThoai</td>
+                                <td>@user.DiaChi</td>
+                                <td>@user.NgaySinh</td>
+                                <td>@user.NgayTao</td>
+                                <td>
+                                    <div class="d-flex gap-3">
+                                        <!-- Chi tiết -->
+                                        <NavLink class="" href="@($"/userdetail/{user.Id}")">
+                                            <i class="fas fa-info-circle"
+                                               style="color:#2b85ec; font-size:1.2rem; cursor:pointer;"
+                                               data-bs-toggle="tooltip" title="Chi tiết"></i>
+                                        </NavLink>
+
+                                        <!-- Update -->
+                                        <NavLink href="@($"/userupdate/{user.Id}")">
+                                            <i class="fas fa-user-edit"
+                                               style="color:#ffc107; font-size:1.2rem; cursor:pointer;"
+                                               data-bs-toggle="tooltip" title="Cập nhật"></i>
+                                        </NavLink>
+                                        
+                                        <!-- Delete -->
+                                        <i class="fas fa-trash" style="color:#dc3545; font-size:1.2rem; cursor:pointer;"
+                                           data-bs-toggle="tooltip" title="Xóa"
+                                           @onclick="() => HandleDelete(user.Email)"></i>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public string tuKhoa { get; set; } = "";
+    public async Task HandleSearch()
+    {
+        _navigationManager.NavigateTo(@$"/users?tuKhoa={tuKhoa}");
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        await userServices.GetUsersByKeyWord(token, tuKhoa);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            _navigationManager.NavigateTo("/", true);
+        }
+        await userServices.GetAllUsers(token);
+    }
+
+    private async Task HandleDelete(string email)
+    {
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        var result = await userServices.DeleteUser(token, email);
+        if (result) // giả sử DeleteUser trả về true khi thành công
+        {
+            // Sau khi xóa, gọi lại API lấy danh sách user
+            await userServices.GetAllUsers(token);
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userServices.OnChange -= StateHasChanged;
+    }
+}

@@ -1,0 +1,467 @@
+@page "/shipmenthistory"
+
+@inject HttpClient Http
+@implements IDisposable
+
+@inject UserServices userServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+
+        <div class="d-none d-lg-block">
+            <CustomerSidebarLayoutFull />
+        </div>
+
+
+        <!-- Nội dung chính -->
+        <div class="container-fluid py-4">
+
+            <div class="row justify-content-center">
+
+                <div class="col-12 col-xl-9">
+
+
+                    <!-- Header -->
+                    <div class="mb-4">
+
+                        <h4 class="fw-bold mb-1">
+                            <i class="fas fa-route text-primary me-2"></i>
+                            Lịch sử đơn vận chuyển
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Theo dõi toàn bộ quá trình vận chuyển của đơn hàng
+                        </p>
+
+                    </div>
+
+
+                    <!-- Search -->
+                    <div class="card border-0 shadow-sm mb-4">
+
+                        <div class="card-body p-4">
+
+                            <div class="row g-3 align-items-end">
+
+                                <div class="col-12 col-md-8">
+
+                                    <label class="form-label fw-semibold">
+                                        Mã đơn vận chuyển
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text bg-white">
+                                            <i class="fas fa-barcode text-muted"></i>
+                                        </span>
+
+                                        <input type="text" class="form-control" placeholder="Nhập mã đơn vận chuyển..."
+                                               @bind="maDonVanChuyen" />
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-12 col-md-4">
+
+                                    <button type="button" class="btn btn-primary w-100" @onclick="TraCuuLichSu">
+
+                                        <i class="fas fa-search me-2"></i>
+
+                                        Tra cứu lịch sử
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Thông tin đơn -->
+                    @if (userServices.lichSuDonVanChuyenViewModels.Any())
+                    {
+                        var donVanChuyen =
+                            userServices.lichSuDonVanChuyenViewModels.First();
+
+                        var trangThaiHienTai =
+                            userServices.lichSuDonVanChuyenViewModels.Last();
+
+
+                        <div class="card border-0 shadow-sm mb-4">
+
+                            <div class="card-body p-4">
+
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+
+                                    <div>
+
+                                        <h5 class="fw-bold mb-1">
+                                            Thông tin đơn vận chuyển
+                                        </h5>
+
+                                        <span class="text-muted small">
+
+                                            Mã đơn:
+
+                                            @donVanChuyen.MaDonVanChuyen
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <span class="badge bg-primary">
+
+                                        @trangThaiHienTai.TrangThai
+
+                                    </span>
+
+                                </div>
+
+
+                                <div class="row g-3">
+
+
+                                    <!-- Mã đơn -->
+                                    <div class="col-12 col-md-6">
+
+                                        <div class="border rounded p-3">
+
+                                            <div class="text-muted small mb-1">
+                                                Mã đơn vận chuyển
+                                            </div>
+
+                                            <div class="fw-bold">
+
+                                                @donVanChuyen.MaDonVanChuyen
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- Trạng thái -->
+                                    <div class="col-12 col-md-6">
+
+                                        <div class="border rounded p-3">
+
+                                            <div class="text-muted small mb-1">
+                                                Trạng thái hiện tại
+                                            </div>
+
+                                            <div class="fw-bold text-primary">
+
+                                                <i class="fas fa-circle-check me-1"></i>
+
+                                                @trangThaiHienTai.TrangThai
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+
+
+                    <!-- Lịch sử -->
+                    @if (userServices.lichSuDonVanChuyenViewModels.Any())
+                    {
+
+                        <div class="card border-0 shadow-sm">
+
+                            <div class="card-body p-4">
+
+
+                                <div class="mb-4">
+
+                                    <h5 class="fw-bold mb-1">
+                                        Lịch sử vận chuyển
+                                    </h5>
+
+                                    <p class="text-muted small mb-0">
+                                        Toàn bộ quá trình xử lý đơn vận chuyển
+                                    </p>
+
+                                </div>
+
+
+                                @foreach (var item in userServices.lichSuDonVanChuyenViewModels)
+                                {
+
+                                    bool laTrangThaiCuoi =
+                                        item ==
+                                        userServices.lichSuDonVanChuyenViewModels.Last();
+
+
+                                    <div
+                                        class="border-start @(laTrangThaiCuoi ? "border-success" : "border-primary") border-3 ps-3 @(laTrangThaiCuoi ? "" : "mb-4")">
+
+
+                                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+
+
+                                            <div>
+
+                                                <h6 class="fw-bold @(laTrangThaiCuoi ? "text-success" : "text-primary") mb-1">
+
+                                                    <i class="@GetIconTrangThai(item.TrangThai) me-2"></i>
+
+                                                    @item.TrangThai
+
+                                                </h6>
+
+
+                                                <p class="text-muted small mb-0">
+
+                                                    @GetMoTaTrangThai(item.TrangThai)
+
+                                                </p>
+
+                                            </div>
+
+
+                                            <span class="@(laTrangThaiCuoi ? "text-success fw-semibold" : "text-muted") small">
+
+                                                <i class="far fa-clock me-1"></i>
+
+                                                @item.ThoiGian?.ToString("dd/MM/yyyy HH:mm:ss")
+
+                                            </span>
+
+
+                                        </div>
+
+                                    </div>
+
+                                }
+
+                            </div>
+
+                        </div>
+
+                    }
+                    else
+                    {
+
+                        <!-- Chưa có dữ liệu -->
+                        <div class="card border-0 shadow-sm">
+
+                            <div class="card-body text-center py-5">
+
+                                <i class="fas fa-route fa-3x text-muted mb-3"></i>
+
+                                <h6 class="fw-bold">
+                                    Chưa có lịch sử vận chuyển
+                                </h6>
+
+                                <p class="text-muted small mb-0">
+                                    Nhập mã đơn vận chuyển để tra cứu lịch sử.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    private string maDonVanChuyen = string.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        userServices.OnChange += StateHasChanged;
+
+        string? token =
+            await localStorage.GetItemAsync<string>("accessToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            navManager.NavigateTo("/", true);
+
+            return;
+        }
+    }
+
+
+    // Tra cứu lịch sử đơn vận chuyển
+    private async Task TraCuuLichSu()
+    {
+        if (string.IsNullOrWhiteSpace(maDonVanChuyen))
+        {
+            return;
+        }
+
+
+        string? token =
+            await localStorage.GetItemAsync<string>("accessToken");
+
+
+        if (string.IsNullOrEmpty(token))
+        {
+            navManager.NavigateTo("/", true);
+
+            return;
+        }
+
+
+        await userServices.GetInfoLichSuDonVanChuyen(
+            token,
+            maDonVanChuyen.Trim());
+    }
+
+
+    // Lấy icon theo trạng thái
+    private string GetIconTrangThai(string? trangThai)
+    {
+        if (string.IsNullOrWhiteSpace(trangThai))
+        {
+            return "fas fa-circle-info";
+        }
+
+
+        if (trangThai.Contains(
+            "đã giao",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "fas fa-circle-check";
+        }
+
+
+        if (trangThai.Contains(
+            "đang giao",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "fas fa-motorcycle";
+        }
+
+
+        if (trangThai.Contains(
+            "vận chuyển",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "fas fa-truck";
+        }
+
+
+        if (trangThai.Contains(
+            "kho",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "fas fa-warehouse";
+        }
+
+
+        if (trangThai.Contains(
+            "tạo",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "fas fa-file-circle-plus";
+        }
+
+
+        return "fas fa-circle-info";
+    }
+
+
+    // Lấy mô tả theo trạng thái
+    private string GetMoTaTrangThai(string? trangThai)
+    {
+        if (string.IsNullOrWhiteSpace(trangThai))
+        {
+            return "Đơn vận chuyển đã cập nhật trạng thái.";
+        }
+
+
+        if (trangThai.Contains(
+            "Đã tạo",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "Đơn vận chuyển đã được tạo thành công.";
+        }
+
+
+        if (trangThai.Contains(
+            "Vào kho",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "Kiện hàng đã được tiếp nhận vào kho.";
+        }
+
+
+        if (trangThai.Contains(
+            "Ở kho",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "Kiện hàng hiện đang được lưu trữ tại kho.";
+        }
+
+
+        if (trangThai.Contains(
+            "Đang vận chuyển",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "Đơn hàng đang được vận chuyển đến kho tiếp theo.";
+        }
+
+
+        if (trangThai.Contains(
+            "Đang giao",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "Đơn hàng đang được giao đến người nhận.";
+        }
+
+
+        if (trangThai.Contains(
+            "Đã giao",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "Đơn hàng đã được giao thành công cho người nhận.";
+        }
+
+
+        return "Đơn vận chuyển đã cập nhật trạng thái.";
+    }
+
+
+    public void Dispose()
+    {
+        userServices.OnChange -= StateHasChanged;
+    }
+
+}

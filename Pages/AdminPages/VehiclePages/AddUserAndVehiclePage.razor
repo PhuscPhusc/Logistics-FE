@@ -1,0 +1,117 @@
+@page "/adduserandvehicle"
+
+
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserAdminServices userAdminServices;
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-primary">Gán tài xế cho phương tiện</h2>
+
+            <EditForm Model="@addInfo" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="p-4 border rounded bg-white shadow-sm">
+                    <!-- Email hoặc tên đăng nhập -->
+                    <div class="mb-3">
+                        <label for="emailOrUser" class="form-label">Email hoặc tên đăng nhập tài xế</label>
+                        <InputText id="emailOrUser" class="form-control" @bind-Value="addInfo.EmailOrUser" placeholder="VD: Tên đăng nhập hoặc Email"/>
+                    </div>
+
+                    <!-- Biển số phương tiện -->
+                    <div class="mb-3">
+                        <label for="bienSo" class="form-label">Biển số phương tiện</label>
+                        <InputText id="bienSo" class="form-control" @bind-Value="addInfo.BienSoPhuongTien" placeholder="VD: 51C-123.45"/>
+                    </div>
+
+                    <!-- Nút hành động -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="reset" class="btn btn-outline-secondary">Làm mới</button>
+                        <button type="submit" class="btn btn-primary">Gán tài xế</button>
+                    </div>
+                </div>
+            </EditForm>
+
+
+            <!-- Kết quả (sau khi backend trả về DTO) -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-success text-white fw-bold">
+                    Kết quả gán tài xế
+                </div>
+                @foreach(var infoUserWithVehicle in userAdminServices.userWithVehicleViewModels)
+                {
+                    <div class="card-body">
+                        <p><strong>Họ tên:</strong> @infoUserWithVehicle.HoTen</p>
+                        <p><strong>Tên đăng nhập:</strong> @infoUserWithVehicle.TenDangNhap</p>
+                        <p><strong>Email:</strong> @infoUserWithVehicle.Email</p>
+                        <p><strong>Số điện thoại:</strong> @infoUserWithVehicle.SoDienThoai</p>
+                        
+                        <p><strong>Loại phương tiện:</strong> @infoUserWithVehicle.LoaiPhuongTien</p>
+                        <p><strong>Biển số phương tiện:</strong> @infoUserWithVehicle.BienSoPhuongTien</p>
+                        <p><strong>Tải trọng tối đa:</strong> @infoUserWithVehicle.TaiTrongToiDa</p>
+                        <p><strong>Số giấy phép lái xe:</strong> @infoUserWithVehicle.SoGiayPhep</p>
+                        <hr>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    @code {
+        private AddUserAndVehicleViewModel addInfo = new();
+
+        protected override async Task OnInitializedAsync()
+        {
+            userAdminServices.OnChange += StateHasChanged;
+            string? token = await localStorage.GetItemAsync<string>("accessToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                // Nếu không có token thì đá về login
+                navManager.NavigateTo("/", true);
+            }
+        }
+
+        private async Task HandleSubmit()
+        {
+            string? token = await localStorage.GetItemAsync<string>("accessToken");
+            await userAdminServices.AddUserAndVehicle(token, addInfo.EmailOrUser!, addInfo.BienSoPhuongTien!);
+        }
+
+        public void Dispose()
+        {
+            userAdminServices.OnChange -= StateHasChanged;
+        }
+    }
+
+    public class AddUserAndVehicleViewModel
+    {
+        public string? EmailOrUser { get; set; }
+        public string? BienSoPhuongTien { get; set; }
+    }
+
+}

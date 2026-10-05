@@ -1,0 +1,54 @@
+@inject UserAdminServices userServices;
+@inject NavigationManager navManager;
+
+<div class="d-none d-lg-block bg-light" style="width:250px; height:100vh;">
+  <div class="p-3 fw-bold text-danger border-bottom">viettel post</div>
+
+  <div class="list-group list-group-flush">
+    <!-- Trang chủ -->
+    <a class="list-group-item list-group-item-action d-flex align-items-center" href="/operationstaffdetailinfo">
+      <span class="flex-grow-1"><i class="fas fa-user"></i> Thông tin cá nhân</span>
+      <span class="text-end"><i class="fas fa-home"></i></span>
+    </a>
+
+
+    <!-- Phương tiện -->
+    <a class="list-group-item list-group-item-action d-flex align-items-center" data-bs-toggle="collapse"
+       href="#submenuManage" role="button" aria-expanded="false" aria-controls="submenuManage">
+      <span class="flex-grow-1"><i class="fas fa-box"></i> Chuyến xe và đơn hàng</span>
+      <span class="text-end"><i class="fas fa-chevron-circle-down"></i></span>
+    </a>
+    <div class="collapse" id="submenuManage">
+      <div class="list-group list-group-flush ms-4">
+        <a href="/shiptmentandtrip" class="list-group-item list-group-item-action">Thông tin kiện hàng trong chuyến xe</a>
+        <a href="/addshipmenttotrip" class="list-group-item list-group-item-action">Thêm kiện hàng vào phương tiện</a>
+      </div>
+    </div>
+
+
+    <!-- Tài khoản -->
+    <a class="list-group-item list-group-item-action d-flex align-items-center" data-bs-toggle="collapse"
+       href="#submenuAccount" role="button" aria-expanded="false" aria-controls="submenuAccount">
+      <span class="flex-grow-1"><i class="fas fa-cog"></i> Tài khoản</span>
+      <span class="text-end"><i class="fas fa-chevron-circle-down"></i></span>
+    </a>
+    <div class="collapse" id="submenuAccount">
+      <div class="list-group list-group-flush ms-4">
+        @* <a href="/detailinfo" class="list-group-item list-group-item-action">Thông tin cá nhân</a> *@
+        @* <a href="#" class="list-group-item list-group-item-action">Đổi mật khẩu</a> *@
+        <a href="" class="list-group-item list-group-item-action" @onclick="HandleLogout">Đăng xuất</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+@code {
+  private async Task HandleLogout()
+  {
+    await userServices.Logout();
+    navManager.NavigateTo("/");
+  }
+}

@@ -1,0 +1,83 @@
+@page "/rolespage"
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+@inject RoleServices roleServices;
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-primary">Danh sách Vai Trò</h2>
+
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Tên</th>
+                        <th scope="col">Ngày Tạo</th>
+                        <th scope="col">Đã Xóa</th>
+                        <th scope="col">Ngày Xóa</th>
+                        <th scope="col">Dữ liệu mở rộng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Ví dụ dữ liệu mẫu -->
+                    @foreach(var vaiTro in roleServices.rolesViewModel)
+                    {
+                        <tr>
+                            <td><span class="badge bg-success">@vaiTro.Ten</span></td>
+                            <td>@vaiTro.NgayTao</td>
+                            <td><span class="text-danger">@vaiTro.DaXoa</span></td>
+                            <td>-</td>
+                            <td><span class="text-muted">@vaiTro.DuLieuMoRong</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        roleServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+        await roleServices.GetAllRole(token);
+    }
+
+    
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        roleServices.OnChange -= StateHasChanged;
+    }
+}

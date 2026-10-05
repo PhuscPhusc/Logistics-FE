@@ -1,0 +1,158 @@
+@page "/customerupdate/{id:guid}"
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserServices userServices;
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <CustomerSidebarLayoutFull />
+        </div>
+
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-primary">Cập nhật thông tin cá nhân</h2>
+
+            <!-- Thông báo -->
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> @successMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> @errorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <EditForm Model="@updateUserInfo" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="p-4 border rounded bg-white shadow-sm">
+                    <div class="row g-3">
+                        <!-- Tên đăng nhập -->
+                        <div class="col-md-6">
+                            <label class="form-label">Tên đăng nhập</label>
+                            <InputText class="form-control" @bind-Value="updateUserInfo.TenDangNhap" />
+                            <ValidationMessage For="@(() => updateUserInfo.TenDangNhap)" />
+                        </div>
+
+                        <!-- Họ tên -->
+                        <div class="col-md-6">
+                            <label class="form-label">Họ và tên</label>
+                            <InputText class="form-control" @bind-Value="updateUserInfo.HoTen" />
+                            <ValidationMessage For="@(() => updateUserInfo.HoTen)" />
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <InputText type="email" class="form-control" @bind-Value="updateUserInfo.Email" />
+                            <ValidationMessage For="@(() => updateUserInfo.Email)" />
+                        </div>
+
+                        <!-- Số điện thoại -->
+                        <div class="col-md-6">
+                            <label class="form-label">Số điện thoại</label>
+                            <InputText type="tel" class="form-control" @bind-Value="updateUserInfo.SoDienThoai" />
+                            <ValidationMessage For="@(() => updateUserInfo.SoDienThoai)" />
+                        </div>
+
+                        <!-- Mật khẩu -->
+                        <div class="col-md-6">
+                            <label class="form-label">Mật khẩu mới</label>
+                            <InputText type="password" class="form-control" @bind-Value="updateUserInfo.MatKhau" />
+                            <small class="text-muted">Để trống nếu không muốn đổi mật khẩu</small>
+                        </div>
+
+                        <!-- Địa chỉ -->
+                        <div class="col-md-6">
+                            <label class="form-label">Địa chỉ</label>
+                            <InputText class="form-control" @bind-Value="updateUserInfo.DiaChi" />
+                        </div>
+                    </div>
+
+                    <!-- Nút hành động -->
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="reset" class="btn btn-outline-secondary">Làm mới</button>
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    </div>
+                </div>
+            </EditForm>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+    private UpdateUserInfoViewModel updateUserInfo = new UpdateUserInfoViewModel();
+    private string? successMessage;
+    private string? errorMessage;
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+        await userServices.GetUserDetailProfile(token);
+        updateUserInfo.TenDangNhap = userServices.detailInfoProfile.TenDangNhap;
+        updateUserInfo.HoTen = userServices.detailInfoProfile.HoTen;
+        updateUserInfo.Email = userServices.detailInfoProfile.Email;
+        updateUserInfo.SoDienThoai = userServices.detailInfoProfile.SoDienThoai;
+        updateUserInfo.DiaChi = userServices.detailInfoProfile.DiaChi;
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            string? token = await localStorage.GetItemAsync<string>("accessToken");
+            await userServices.UpdateUserProfile(token, updateUserInfo);
+
+            successMessage = "Cập nhật thông tin thành công!";
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Cập nhật thất bại: {ex.Message}";
+            successMessage = null;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userServices.OnChange -= StateHasChanged;
+    }
+}

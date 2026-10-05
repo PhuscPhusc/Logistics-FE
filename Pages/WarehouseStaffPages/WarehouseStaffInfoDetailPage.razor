@@ -1,0 +1,544 @@
+@page "/detailinfowarehousestaff"
+
+@inject HttpClient Http
+@implements IDisposable
+@inject UserServices userServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+<div class="d-flex flex-column min-vh-100 bg-light">
+
+    <!-- Mobile Navbar -->
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex flex-grow-1">
+
+        <!-- Desktop Sidebar -->
+        <div class="d-none d-lg-block">
+            <WarehouseStaffSidebarLayoutFull />
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1 p-3 p-md-4">
+
+            <div class="container-fluid">
+
+                <!-- Page Header -->
+                <div class="d-flex flex-column flex-md-row
+                    justify-content-between align-items-md-center mb-4">
+
+                    <div>
+                        <h2 class="fw-bold text-dark mb-1">
+                            Hồ sơ nhân viên
+                        </h2>
+
+                        <p class="text-muted mb-0">
+                            Quản lý và cập nhật thông tin tài khoản nhân viên kho
+                        </p>
+                    </div>
+
+                    <span class="badge bg-primary px-3 py-2 mt-3 mt-md-0">
+                        <i class="fas fa-warehouse me-1"></i>
+                        Warehouse Staff
+                    </span>
+
+                </div>
+
+
+                <!-- Profile Overview -->
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-body p-4">
+
+                        <div class="row align-items-center">
+
+                            <!-- Avatar -->
+                            <div class="col-md-3 text-center mb-4 mb-md-0">
+
+                                <div class="position-relative d-inline-block">
+
+                                    <img src="https://via.placeholder.com/150" alt="Ảnh đại diện"
+                                         class="rounded-circle shadow-sm border border-4 border-white" style="width:150px;
+                                    height:150px;
+                                    object-fit:cover;">
+
+                                    <span class="position-absolute
+                                        bottom-0 end-0
+                                        bg-success
+                                        border border-3 border-white
+                                        rounded-circle" style="width:25px;height:25px;"
+                                          title="Đang hoạt động">
+                                    </span>
+
+                                </div>
+
+                                <h5 class="fw-bold mt-3 mb-1">
+                                    @userServices.detailInfoProfile.HoTen
+                                </h5>
+
+                                <span class="badge bg-primary-subtle text-primary">
+                                    Nhân viên quản lý kho
+                                </span>
+
+                            </div>
+
+
+                            <!-- Basic Information -->
+                            <div class="col-md-9">
+
+                                <div class="row g-4">
+
+                                    <div class="col-md-6">
+
+                                        <div class="d-flex align-items-start">
+
+                                            <div class="bg-primary-subtle
+                                                text-primary
+                                                rounded p-3 me-3">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+
+                                            <div>
+                                                <small class="text-muted">
+                                                    Họ tên
+                                                </small>
+
+                                                <div class="fw-semibold">
+                                                    @userServices.detailInfoProfile.HoTen
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="d-flex align-items-start">
+
+                                            <div class="bg-info-subtle
+                                                text-info
+                                                rounded p-3 me-3">
+                                                <i class="fas fa-user-tag"></i>
+                                            </div>
+
+                                            <div>
+                                                <small class="text-muted">
+                                                    Tên đăng nhập
+                                                </small>
+
+                                                <div class="fw-semibold">
+                                                    @userServices.detailInfoProfile.TenDangNhap
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="d-flex align-items-start">
+
+                                            <div class="bg-success-subtle
+                                                text-success
+                                                rounded p-3 me-3">
+                                                <i class="fas fa-envelope"></i>
+                                            </div>
+
+                                            <div>
+                                                <small class="text-muted">
+                                                    Email
+                                                </small>
+
+                                                <div class="fw-semibold text-break">
+                                                    @userServices.detailInfoProfile.Email
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="d-flex align-items-start">
+
+                                            <div class="bg-warning-subtle
+                                                text-warning
+                                                rounded p-3 me-3">
+                                                <i class="fas fa-phone"></i>
+                                            </div>
+
+                                            <div>
+                                                <small class="text-muted">
+                                                    Số điện thoại
+                                                </small>
+
+                                                <div class="fw-semibold">
+                                                    @userServices.detailInfoProfile.SoDienThoai
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-12">
+
+                                        <div class="d-flex align-items-start">
+
+                                            <div class="bg-danger-subtle
+                                                text-danger
+                                                rounded p-3 me-3">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </div>
+
+                                            <div>
+                                                <small class="text-muted">
+                                                    Địa chỉ chính
+                                                </small>
+
+                                                <div class="fw-semibold">
+                                                    @userServices.detailInfoProfile.DiaChi
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Footer -->
+                    <div class="card-footer bg-white border-top p-3">
+
+                        <div class="d-flex justify-content-end">
+
+                            <NavLink href="@($"/customerupdate/{userServices.detailInfoProfile.Id}")"
+                                     class="btn btn-primary px-4">
+
+                                <i class="fas fa-user-edit me-2"></i>
+                                Chỉnh sửa hồ sơ
+
+                            </NavLink>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Contact / Role Information -->
+                <div class="row g-4 mb-4">
+
+                    <!-- Role -->
+                    <div class="col-md-4">
+
+                        <div class="card border-0 shadow-sm h-100">
+
+                            <div class="card-body p-4">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <div class="bg-primary-subtle
+                                        text-primary
+                                        rounded p-3 me-3">
+
+                                        <i class="fas fa-id-badge fa-lg"></i>
+
+                                    </div>
+
+                                    <div>
+                                        <h6 class="fw-bold mb-0">
+                                            Vai trò
+                                        </h6>
+
+                                        <small class="text-muted">
+                                            Quyền truy cập hệ thống
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <h5 class="text-primary fw-bold mb-0">
+                                    Warehouse Staff
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Email -->
+                    <div class="col-md-4">
+
+                        <div class="card border-0 shadow-sm h-100">
+
+                            <div class="card-body p-4">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <div class="bg-success-subtle
+                                        text-success
+                                        rounded p-3 me-3">
+
+                                        <i class="fas fa-envelope-open-text fa-lg"></i>
+
+                                    </div>
+
+                                    <div>
+                                        <h6 class="fw-bold mb-0">
+                                            Email liên hệ
+                                        </h6>
+
+                                        <small class="text-muted">
+                                            Thông tin tài khoản
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <div class="fw-semibold text-break">
+                                    @userServices.detailInfoProfile.Email
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Phone -->
+                    <div class="col-md-4">
+
+                        <div class="card border-0 shadow-sm h-100">
+
+                            <div class="card-body p-4">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <div class="bg-warning-subtle
+                                        text-warning
+                                        rounded p-3 me-3">
+
+                                        <i class="fas fa-phone-alt fa-lg"></i>
+
+                                    </div>
+
+                                    <div>
+                                        <h6 class="fw-bold mb-0">
+                                            Số điện thoại
+                                        </h6>
+
+                                        <small class="text-muted">
+                                            Liên hệ nhân viên
+                                        </small>
+                                    </div>
+
+                                </div>
+
+                                <div class="fw-semibold">
+                                    @userServices.detailInfoProfile.SoDienThoai
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Other Addresses -->
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white border-0 p-4">
+
+                        <div class="d-flex
+                            justify-content-between
+                            align-items-center">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="bg-danger-subtle
+                                    text-danger
+                                    rounded p-3 me-3">
+
+                                    <i class="fas fa-map-marked-alt fa-lg"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h5 class="fw-bold mb-1">
+                                        Địa chỉ khác
+                                    </h5>
+
+                                    <small class="text-muted">
+                                        Danh sách địa chỉ được lưu trong tài khoản
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                            <span class="badge bg-secondary">
+                                @(userServices.detailInfoProfile.DiaChiKhacs?.Count ?? 0) địa chỉ
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card-body p-0">
+
+                        @if (userServices.detailInfoProfile.DiaChiKhacs == null ||
+                             !userServices.detailInfoProfile.DiaChiKhacs.Any())
+                        {
+                            <div class="text-center py-5">
+
+                                <i class="fas fa-map-marker-alt
+                                text-muted
+                                fa-2x mb-3"></i>
+
+                                <p class="text-muted mb-0">
+                                    Chưa có địa chỉ khác.
+                                </p>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+
+                                <table class="table table-hover align-middle mb-0">
+
+                                    <thead class="table-light">
+
+                                        <tr>
+
+                                            <th class="ps-4">
+                                                #
+                                            </th>
+
+                                            <th>
+                                                Địa chỉ chi tiết
+                                            </th>
+
+                                            <th>
+                                                Phường
+                                            </th>
+
+                                            <th>
+                                                Quận
+                                            </th>
+
+                                            <th>
+                                                Thành phố
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        @{
+                                            int index = 1;
+                                        }
+
+                                        @foreach (var diaChiKhac
+                                            in userServices.detailInfoProfile.DiaChiKhacs)
+                                        {
+                                            <tr>
+
+                                                <td class="ps-4 fw-semibold text-muted">
+                                                    @index
+                                                </td>
+
+                                                <td class="fw-semibold">
+                                                    @diaChiKhac.DiaChiChiTiet
+                                                </td>
+
+                                                <td>
+                                                    @diaChiKhac.Phuong
+                                                </td>
+
+                                                <td>
+                                                    @diaChiKhac.Quan
+                                                </td>
+
+                                                <td>
+                                                    @diaChiKhac.ThanhPho
+                                                </td>
+
+                                            </tr>
+
+                                            index++;
+                                        }
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        userServices.OnChange += StateHasChanged;
+
+        string? token =
+            await localStorage.GetItemAsync<string>("accessToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            navManager.NavigateTo("/", true);
+            return;
+        }
+
+        await userServices.GetUserDetailProfile(token);
+    }
+
+
+    public void Dispose()
+    {
+        userServices.OnChange -= StateHasChanged;
+    }
+
+}

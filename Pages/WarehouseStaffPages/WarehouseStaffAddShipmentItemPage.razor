@@ -1,0 +1,380 @@
+@page "/addshipmentitem"
+
+
+@inject HttpClient Http
+
+@implements IDisposable
+@inject WarehouseStaffServices warehouseStaffServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+<div class="d-flex flex-column min-vh-100 bg-light">
+
+    <!-- Mobile Navbar -->
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex flex-grow-1">
+
+        <!-- Desktop Sidebar -->
+        <div class="d-none d-lg-block">
+            <WarehouseStaffSidebarLayoutFull />
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid py-4 px-4">
+
+            <!-- Header -->
+            <div class="mb-4">
+                <h3 class="fw-bold mb-1">
+                    <i class="fas fa-box text-primary me-2"></i>
+                    Thêm kiện hàng
+                </h3>
+
+                <p class="text-muted mb-0">
+                    Nhập mã vận chuyển để tiếp nhận kiện hàng vào kho hiện tại.
+                </p>
+            </div>
+
+
+            <!-- Form -->
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-body p-4">
+
+                    <label class="form-label fw-semibold">
+                        Mã vận chuyển
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text bg-light">
+                            <i class="fas fa-barcode"></i>
+                        </span>
+
+                        <input type="text" class="form-control" placeholder="Nhập mã vận chuyển..."
+                               @bind="maDonVanChuyen" />
+
+                        <button class="btn btn-primary px-4" type="button" @onclick="ThemKienHang"
+                                disabled="@isLoading">
+
+                            @if (isLoading)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                <span>Đang xử lý...</span>
+                            }
+                            else
+                            {
+                                <i class="fas fa-plus me-2"></i>
+                                <span>Thêm kiện hàng</span>
+                            }
+
+                        </button>
+
+                    </div>
+
+                    <small class="text-muted d-block mt-2">
+                        Hệ thống sẽ tự động kiểm tra đơn vận chuyển và các kiện hàng.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Thông báo lỗi -->
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger d-flex align-items-center">
+
+                    <i class="fas fa-circle-exclamation fs-5 me-2"></i>
+
+                    <div>
+                        <strong>Thêm kiện hàng thất bại!</strong>
+                        <div>@errorMessage</div>
+                    </div>
+
+                </div>
+            }
+
+
+            <!-- Thông báo thành công -->
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success d-flex align-items-center">
+
+                    <i class="fas fa-circle-check fs-5 me-2"></i>
+
+                    <div>
+                        <strong>Thêm kiện hàng thành công!</strong>
+                        <div>@successMessage</div>
+                    </div>
+
+                </div>
+            }
+
+
+            <!-- Kết quả -->
+            @if (warehouseStaffServices.shipmentItemViewModels != null &&
+                 warehouseStaffServices.shipmentItemViewModels.Any())
+            {
+                <div class="card border-0 shadow-sm">
+
+                    <!-- Header -->
+                    <div class="card-header bg-white border-0 p-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+                                <h5 class="fw-bold mb-1">
+
+                                    <i class="fas fa-boxes-stacked text-primary me-2"></i>
+
+                                    Kết quả thêm kiện hàng
+
+                                </h5>
+
+                                <small class="text-muted">
+                                    Danh sách kiện hàng hiện đang có trong kho
+                                </small>
+                            </div>
+
+                            <span class="badge bg-success">
+                                Thành công
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th class="px-4">
+                                        STT
+                                    </th>
+
+                                    <th>
+                                        Mã vận chuyển
+                                    </th>
+
+                                    <th>
+                                        Tên hàng
+                                    </th>
+
+                                    <th class="text-center">
+                                        Số lượng
+                                    </th>
+
+                                    <th>
+                                        Thời gian nhập
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @{
+                                    int stt = 1;
+                                }
+
+                                @foreach (var item in warehouseStaffServices.shipmentItemViewModels)
+                                {
+                                    <tr>
+
+                                        <!-- STT -->
+                                        <td class="px-4 fw-semibold">
+                                            @stt
+                                        </td>
+
+
+                                        <!-- Mã vận chuyển -->
+                                        <td>
+                                            <span class="badge bg-primary">
+                                                @item.MaDonVanChuyen
+                                            </span>
+                                        </td>
+
+
+                                        <!-- Tên hàng -->
+                                        <td>
+
+                                            <div class="d-flex align-items-center">
+
+                                                <div class="bg-light rounded p-2 me-2">
+                                                    <i class="fas fa-box text-primary"></i>
+                                                </div>
+
+                                                <span class="fw-semibold">
+                                                    @item.TenHang
+                                                </span>
+
+                                            </div>
+
+                                        </td>
+
+
+                                        <!-- Số lượng -->
+                                        <td class="text-center">
+
+                                            <span class="badge bg-success">
+                                                @item.SoLuong
+                                            </span>
+
+                                        </td>
+
+
+                                        <!-- Thời gian nhập -->
+                                        <td>
+
+                                            <i class="far fa-clock text-muted me-1"></i>
+
+                                            @(item.ThoiGianNhap?.ToString("dd/MM/yyyy HH:mm")
+                                                ?? "Chưa xác định")
+
+                                        </td>
+
+                                    </tr>
+
+                                    stt++;
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+            }
+            else if (hasSubmitted && string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body text-center py-5">
+
+                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+
+                        <h5 class="fw-semibold">
+                            Không có kiện hàng
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Không tìm thấy kiện hàng trong kết quả trả về.
+                        </p>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    private string maDonVanChuyen = string.Empty;
+
+    private string? errorMessage;
+
+    private string? successMessage;
+
+    private bool isLoading = false;
+
+    private bool hasSubmitted = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        warehouseStaffServices.OnChange += StateHasChanged;
+    }
+
+    private async Task ThemKienHang()
+    {
+        // Reset thông báo
+        errorMessage = null;
+        successMessage = null;
+
+        if (string.IsNullOrWhiteSpace(maDonVanChuyen))
+        {
+            errorMessage = "Vui lòng nhập mã vận chuyển.";
+            return;
+        }
+
+        isLoading = true;
+        hasSubmitted = true;
+
+        try
+        {
+            // Lấy token
+            string? token =
+                await localStorage.GetItemAsync<string>("accessToken");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                navManager.NavigateTo("/", true);
+                return;
+            }
+
+            // Gọi API
+            bool result =
+                await warehouseStaffServices
+                    .ThemMoiHoacChuyenKienHangTuKhoNaySangKhoKhac(
+                        token,
+                        maDonVanChuyen.Trim()
+                    );
+
+            if (result)
+            {
+                successMessage =
+                    $"Đã thêm kiện hàng của đơn vận chuyển {maDonVanChuyen} vào kho thành công.";
+            }
+            else
+            {
+                errorMessage =
+                    "Không thể thêm kiện hàng. Vui lòng kiểm tra lại mã vận chuyển.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage =
+                $"Có lỗi xảy ra: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        warehouseStaffServices.OnChange -= StateHasChanged;
+    }
+
+}
+
+
+
+
+    
+
+    

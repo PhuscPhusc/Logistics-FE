@@ -1,0 +1,521 @@
+@page "/operationstaffdetailinfo"
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject OperationStaffServices operationStaffServices;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+<div class="d-flex flex-column min-vh-100 bg-light">
+
+    <!-- Mobile Navbar -->
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex flex-grow-1">
+
+        <!-- Desktop Sidebar -->
+        <div class="d-none d-lg-block">
+            <OperationStaffSidebarLayoutFull />
+        </div>
+
+
+        <!-- Main Content -->
+        <div class="container-fluid py-4 bg-light min-vh-100">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div>
+                    <h3 class="fw-bold mb-1">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        Thông tin tài xế
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Thông tin cá nhân và chuyến xe hiện tại
+                    </p>
+                </div>
+
+                <button class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    Làm mới
+                </button>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- THÔNG TIN TÀI XẾ -->
+            <!-- ============================= -->
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-person-v-circle me-2"></i>
+                        Thông tin cá nhân
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="row g-4">
+
+                        <!-- Avatar -->
+                        <div class="col-lg-3 col-md-4 text-center">
+
+                            <div class="mb-3">
+
+                                <img src="@operationStaffServices.operationStaffDeatilInfoViewModel.AnhDaiDien" alt="Ảnh đại diện"
+                                     class="rounded-circle border shadow-sm" style="width: 140px;
+                                height: 140px;
+                                object-fit: cover;">
+
+                            </div>
+
+
+                            <h5 class="fw-bold mb-1">
+                                @operationStaffServices.operationStaffDeatilInfoViewModel.HoTen
+                            </h5>
+
+
+                            <span class="badge bg-success">
+
+                                <i class="bi bi-circle-fill me-1" style="font-size: 7px;">
+                                </i>
+
+                                Đang hoạt động
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- Thông tin -->
+                        <div class="col-lg-9 col-md-8">
+
+                            <div class="row g-3">
+
+                                <!-- Tên đăng nhập -->
+                                <div class="col-md-6">
+
+                                    <div class="info-item">
+
+                                        <label class="text-muted small">
+                                            Tên đăng nhập
+                                        </label>
+
+                                        <div class="fw-semibold">
+                                            @operationStaffServices.operationStaffDeatilInfoViewModel.TenDangNhap
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Họ tên -->
+                                <div class="col-md-6">
+
+                                    <div class="info-item">
+
+                                        <label class="text-muted small">
+                                            Họ và tên
+                                        </label>
+
+                                        <div class="fw-semibold">
+                                            @operationStaffServices.operationStaffDeatilInfoViewModel.HoTen
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Email -->
+                                <div class="col-md-6">
+
+                                    <div class="info-item">
+
+                                        <label class="text-muted small">
+                                            Email
+                                        </label>
+
+                                        <div class="fw-semibold">
+                                            @operationStaffServices.operationStaffDeatilInfoViewModel.Email
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Số điện thoại -->
+                                <div class="col-md-6">
+
+                                    <div class="info-item">
+
+                                        <label class="text-muted small">
+                                            Số điện thoại
+                                        </label>
+
+                                        <div class="fw-semibold">
+                                            @operationStaffServices.operationStaffDeatilInfoViewModel.SoDienThoai
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Số giấy phép -->
+                                <div class="col-md-6">
+
+                                    <div class="info-item">
+
+                                        <label class="text-muted small">
+                                            Số giấy phép lái xe
+                                        </label>
+
+                                        <div class="fw-semibold">
+                                            @operationStaffServices.operationStaffDeatilInfoViewModel.SoGiayPhep
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Địa chỉ -->
+                                <div class="col-md-6">
+
+                                    <div class="info-item">
+
+                                        <label class="text-muted small">
+                                            Địa chỉ
+                                        </label>
+
+                                        <div class="fw-semibold">
+                                            @operationStaffServices.operationStaffDeatilInfoViewModel.DiaChi
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ============================= -->
+            <!-- THÔNG TIN CHUYẾN XE -->
+            <!-- ============================= -->
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-truck me-2"></i>
+
+                            Chuyến xe hiện tại
+
+                        </h5>
+
+
+                        <span class="badge bg-primary">
+
+                            Đang thực hiện
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <!-- Mã chuyến -->
+                    <div class="text-center mb-4">
+
+                        <div class="text-muted small">
+                            Mã chuyến xe
+                        </div>
+
+                        <h2 class="fw-bold text-primary mb-0">
+
+                            @operationStaffServices.operationStaffDeatilInfoViewModel.infoChuyenXe.MaChuyen
+                           
+
+                        </h2>
+
+                    </div>
+
+
+                    <div class="row g-4">
+
+
+                        <!-- Phương tiện -->
+                        <div class="col-lg-4">
+
+                            <div class="border rounded-3 p-3 h-100">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <div class="bg-primary bg-opacity-10
+                                        text-primary rounded-circle
+                                        p-3 me-3">
+
+                                        <i class="bi bi-truck fs-4"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <div class="text-muted small">
+                                            Phương tiện
+                                        </div>
+
+                                        <div class="fw-bold">
+
+                                            @operationStaffServices.operationStaffDeatilInfoViewModel.infoChuyenXe.Loai
+                                            
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="text-muted small mb-1">
+                                    Biển số xe
+                                </div>
+
+                                <div class="fw-bold fs-5">
+
+                                    @operationStaffServices.operationStaffDeatilInfoViewModel.infoChuyenXe.BienSo
+                                    
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Kho xuất phát -->
+                        <div class="col-lg-4">
+
+                            <div class="border rounded-3 p-3 h-100">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <div class="bg-success bg-opacity-10
+                                        text-success rounded-circle
+                                        p-3 me-3">
+
+                                        <i class="bi bi-box-arrow-right fs-4"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <div class="text-muted small">
+                                            Kho xuất phát
+                                        </div>
+
+                                        <div class="fw-bold">
+
+                                            @operationStaffServices.operationStaffDeatilInfoViewModel.TenKhoXuatPhat
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="text-muted small">
+                                    Điểm bắt đầu chuyến xe
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Kho đích -->
+                        <div class="col-lg-4">
+
+                            <div class="border rounded-3 p-3 h-100">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <div class="bg-danger bg-opacity-10
+                                        text-danger rounded-circle
+                                        p-3 me-3">
+
+                                        <i class="bi bi-box-arrow-in-down fs-4"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <div class="text-muted small">
+                                            Kho đích
+                                        </div>
+
+                                        <div class="fw-bold">
+
+                                            @operationStaffServices.operationStaffDeatilInfoViewModel.TenKhoDich
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="text-muted small">
+                                    Điểm kết thúc chuyến xe
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Lộ trình -->
+                    <div class="mt-4">
+
+                        <div class="text-muted small mb-2">
+                            Lộ trình
+                        </div>
+
+
+                        <div class="d-flex align-items-center">
+
+                            <!-- Kho xuất phát -->
+                            <div class="text-center">
+
+                                <div class="rounded-circle bg-success
+                                    text-white p-2">
+
+                                    <i class="bi bi-geo-alt-fill"></i>
+
+                                </div>
+
+                                <div class="small fw-semibold mt-2">
+
+                                    @operationStaffServices.operationStaffDeatilInfoViewModel.TenKhoXuatPhat
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Line -->
+                            <div class="flex-grow-1 mx-3">
+
+                                <div class="progress" style="height: 6px;">
+
+                                    <div class="progress-bar bg-success" style="width: 50%;">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Kho đích -->
+                            <div class="text-center">
+
+                                <div class="rounded-circle bg-danger
+                                    text-white p-2">
+
+                                    <i class="bi bi-geo-alt-fill"></i>
+
+                                </div>
+
+                                <div class="small fw-semibold mt-2">
+
+                                    @operationStaffServices.operationStaffDeatilInfoViewModel.TenKhoDich
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        operationStaffServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+           
+
+        if (string.IsNullOrEmpty(token))
+        {
+            navManager.NavigateTo("/", true);
+            return;
+        }
+
+        await operationStaffServices.GetInfoOperationStaffVaInfoTrip(token);
+    }
+
+    
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        operationStaffServices.OnChange -= StateHasChanged;
+    }
+}

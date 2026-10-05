@@ -1,0 +1,74 @@
+@page "/userwarehouse"
+
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserAdminServices userAdminServices;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-primary">Thông tin nhân viên được phân công kho</h2>
+            @foreach(var userWareHouse in userAdminServices.userWareHouseViews)
+            {
+                <!-- Card hiển thị thông tin -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-danger text-dark fw-bold">
+                        Phân công kho
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Tên kho:</strong> @userWareHouse.tenKho</p>
+                        <p><strong>Mã kho:</strong> @userWareHouse.maKho</p>
+                        <p><strong>Tên người dùng:</strong> @userWareHouse.tenNguoiDung</p>
+                        <p><strong>Ngày gán:</strong> @userWareHouse.ngayGan</p>
+                        <p><strong>Người gán:</strong> @userWareHouse.tenNguoiGan</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userAdminServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+        await userAdminServices.GetAllUserWareHouse(token);
+    }
+
+    
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userAdminServices.OnChange -= StateHasChanged;
+    }
+}

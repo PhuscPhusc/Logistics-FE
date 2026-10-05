@@ -1,0 +1,146 @@
+@page "/updatewarehouse/{id:guid}"
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserAdminServices userServices;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject IJSRuntime JS
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-primary">Cập nhật thông tin Kho</h2>
+
+            <EditForm Model="model" OnValidSubmit="HandleSubmit" class="p-4 border rounded bg-white shadow-sm">
+                <!-- Tên kho -->
+                <div class="mb-3">
+                    <label for="tenKho" class="form-label">Tên kho</label>
+                    <InputText id="tenKho" class="form-control" @bind-Value="model.Ten" placeholder="Nhập tên kho mới" />
+                </div>
+
+                <!-- Địa chỉ -->
+                <div class="mb-3">
+                    <label for="diaChi" class="form-label">Địa chỉ</label>
+                    <InputText id="diaChi" class="form-control" @bind-Value="model.DiaChi" placeholder="Nhập địa chỉ mới" />
+                </div>
+
+                <!-- Dữ liệu mở rộng -->
+                <div class="mb-3">
+                    <label for="duLieuMoRong" class="form-label">Dữ liệu mở rộng</label>
+                    <InputTextArea id="duLieuMoRong" class="form-control" @bind-Value="model.DuLieuMoRong" rows="3"
+                                placeholder='Ví dụ: {"capacity":1200,"status":"active"}' />
+                </div>
+
+                <!-- Vĩ độ -->
+                <div class="mb-3">
+                    <label for="viDo" class="form-label">Vĩ độ</label>
+                    <InputNumber id="viDo" class="form-control" @bind-Value="model.ViDo" step="0.000001" />
+                </div>
+
+                <!-- Kinh độ -->
+                <div class="mb-3">
+                    <label for="kinhDo" class="form-label">Kinh độ</label>
+                    <InputNumber id="kinhDo" class="form-control" @bind-Value="model.KinhDo" step="0.000001" />
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="reset" class="btn btn-outline-secondary">Làm mới</button>
+                    <button type="submit" class="btn btn-primary">Cập nhật kho</button>
+                </div>
+            </EditForm>
+
+
+            <div class="text-end mt-3">
+                <a href="/warehouses" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Thoát
+                </a>
+            </div>
+
+            <!-- Modal Bootstrap -->
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title" id="successModalLabel">Cập nhật kho thành công</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Tên kho:</strong> @model.Ten</p>
+                            <p><strong>Địa chỉ:</strong> @model.DiaChi</p>
+                            <p><strong>Dữ liệu mở rộng:</strong> @model.DuLieuMoRong</p>
+                            <p><strong>Vĩ độ:</strong> @model.ViDo</p>
+                            <p><strong>Kinh độ:</strong> @model.KinhDo</p>
+                            <p><strong>Ngày cập nhật:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+    private UpdateInfoWareHouseViewModel model = new UpdateInfoWareHouseViewModel();
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var maKho = userServices.wareHouses.FirstOrDefault(wh => wh.Id == id)?.MaKho;
+        // Lấy token từ local storage
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        // Gọi service
+        var result = await userServices.UpdateInfoWareHouse(token, maKho, model);
+        Console.WriteLine(JsonSerializer.Serialize(model));
+
+
+        if (result) // giả sử service trả về true khi thành công
+        {
+            // Gọi JS để bật modal Bootstrap
+            await JS.InvokeVoidAsync("bootstrapModalShow", "#successModal");
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userServices.OnChange -= StateHasChanged;
+    }
+}

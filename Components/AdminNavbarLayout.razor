@@ -1,0 +1,53 @@
+
+
+<!-- Navbar (mobile) -->
+<div class=" w-100">
+    <nav class="navbar navbar-light bg-danger">
+        <div class="container-fluid">
+            <!-- Nút hamburger -->
+            <button class="btn btn-danger" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- Ô tìm kiếm -->
+            <form class="d-flex ms-3 flex-grow-1">
+                <input class="form-control me-2" type="search" placeholder="Tra cứu đơn hàng">
+                <button class="btn btn-outline-light" type="submit">Tìm</button>
+            </form>
+            <!-- Thông báo + Avatar -->
+            <div class="d-flex align-items-center ms-3">
+                <a class="nav-link text-white position-relative me-3" href="#">
+                    <i class="bi bi-bell"></i>
+                    <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-danger">45</span>
+                </a>
+                <div class="dropdown">
+                <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown"
+                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user fs-3"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="#">Cài đặt</a></li>
+                    <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+                </ul>
+            </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<!-- Offcanvas chứa sidebar sẵn có -->
+<div class="offcanvas offcanvas-start bg-light" tabindex="-1" id="mobileSidebar">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <!-- Sidebar bạn đã tạo sẵn có thể copy nguyên vào đây -->
+        <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-house"></i> Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-plus-square"></i> Tạo đơn</a></li>
+            <li class="nav-item"><a class="nav-link active" href="#"><i class="bi bi-list-check"></i> Đơn hàng cần xử lý</a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people"></i> Danh sách người nhận</a></li>
+        </ul>
+    </div>
+</div>

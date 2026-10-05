@@ -1,0 +1,389 @@
+@page "/addshipmentdelivery"
+
+@inject HttpClient Http
+@implements IDisposable
+
+@inject DeliveryStaffServices deliveryStaffServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+<div class="d-flex flex-column">
+
+    <!-- Navbar mobile -->
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <DeliveryStaffSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container py-4">
+
+            <!-- Tiêu đề -->
+            <div class="mb-4">
+                <h3 class="fw-bold mb-1">
+                    <i class="fas fa-truck-fast text-primary me-2"></i>
+                    Thêm đơn vận chuyển giao hàng
+                </h3>
+
+                <p class="text-muted mb-0">
+                    Thêm các đơn vận chuyển vào danh sách giao hàng của tài xế.
+                </p>
+            </div>
+
+
+            <!-- Form -->
+            <EditForm Model="@addShipmentDeliveryViewModel" OnValidSubmit="@HandleSubmit">
+
+                <div class="card border-0 shadow-sm">
+
+                    <!-- Header -->
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fas fa-plus-circle text-primary me-2"></i>
+                            Thông tin đơn vận chuyển
+                        </h5>
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <!-- Danh sách mã đơn -->
+                        <div class="mb-4">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                                <label class="form-label fw-semibold mb-0">
+                                    Danh sách mã đơn vận chuyển
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <button type="button" class="btn btn-outline-primary btn-sm" @onclick="ThemDongMaDon">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Thêm dòng
+                                </button>
+
+                            </div>
+
+
+                            @foreach (var item in danhSachMaDonVanChuyen)
+                            {
+                                <div class="input-group mb-2">
+
+                                    <!-- STT -->
+                                    <span class="input-group-text bg-light"
+                                          style="min-width: 45px; justify-content: center;">
+                                        @((danhSachMaDonVanChuyen.IndexOf(item) + 1))
+                                    </span>
+
+
+                                    <!-- Input -->
+                                    <input type="text" class="form-control" @bind="item.MaDonVanChuyen"
+                                           placeholder="Nhập mã đơn vận chuyển" />
+
+
+                                    <!-- Xóa -->
+                                    @if (danhSachMaDonVanChuyen.Count > 1)
+                                    {
+                                        <button type="button" class="btn btn-outline-danger" title="Xóa"
+                                                @onclick="() => XoaDongMaDon(item)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    }
+
+                                </div>
+                            }
+
+
+                            <div class="form-text">
+                                Nhập mã đơn vận chuyển vào từng dòng.
+                                Có thể thêm nhiều đơn cùng lúc.
+                            </div>
+
+                        </div>
+
+
+                        <!-- Button -->
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <!-- Làm lại -->
+                            <button type="button" class="btn btn-outline-secondary" @onclick="LamLai">
+                                <i class="fas fa-rotate-left me-1"></i>
+                                Làm lại
+                            </button>
+
+
+                            <!-- Submit -->
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+
+                                    <span>Đang thêm...</span>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-truck-fast me-1"></i>
+                                    <span>Thêm đơn vận chuyển</span>
+                                }
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </EditForm>
+
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ============================= -->
+<!-- MODAL THÔNG BÁO -->
+<!-- ============================= -->
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow">
+
+                <!-- Header -->
+                <div class="modal-header">
+
+                    <h5 class="modal-title fw-bold">
+
+                        @if (isSuccess)
+                        {
+                            <i class="fas fa-circle-check text-success me-2"></i>
+                            <span>Thành công</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-circle-exclamation text-danger me-2"></i>
+                            <span>Thông báo</span>
+                        }
+
+                    </h5>
+
+                    <button type="button" class="btn-close" @onclick="DongModal">
+                    </button>
+
+                </div>
+
+
+                <!-- Body -->
+                <div class="modal-body text-center py-4">
+
+                    @if (isSuccess)
+                    {
+                        <div class="mb-3">
+                            <i class="fas fa-circle-check text-success" style="font-size: 55px;">
+                            </i>
+                        </div>
+
+                        <h5 class="fw-bold text-success">
+                            Thêm đơn vận chuyển thành công
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Các đơn vận chuyển đã được thêm vào danh sách giao hàng.
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <i class="fas fa-circle-exclamation text-danger" style="font-size: 55px;">
+                            </i>
+                        </div>
+
+                        <h5 class="fw-bold text-danger">
+                            Thêm đơn vận chuyển thất bại
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Vui lòng kiểm tra lại thông tin đơn vận chuyển.
+                        </p>
+                    }
+
+                </div>
+
+
+                <!-- Footer -->
+                <div class="modal-footer justify-content-center">
+
+                    <button type="button" class="btn @(isSuccess ? "btn-success" : "btn-danger") px-4" @onclick="DongModal">
+
+                        <i class="fas fa-check me-1"></i>
+                        Đóng
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+@code {
+
+    // ViewModel gửi API
+    private AddShipmentDeliveryViewModel addShipmentDeliveryViewModel = new();
+
+
+    // Danh sách các dòng input trên giao diện
+    private List<MaDonVanChuyenInput> danhSachMaDonVanChuyen = new()
+    {
+        new MaDonVanChuyenInput()
+    };
+
+
+    private bool isLoading = false;
+
+    // Modal
+    private bool showModal = false;
+    private bool isSuccess = false;
+
+
+    // Model của từng dòng input
+    private class MaDonVanChuyenInput
+    {
+        public string MaDonVanChuyen { get; set; } = string.Empty;
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        deliveryStaffServices.OnChange += StateHasChanged;
+
+        string? token =
+            await localStorage.GetItemAsync<string>("accessToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            navManager.NavigateTo("/", true);
+            return;
+        }
+    }
+
+
+    // Thêm một dòng nhập mã đơn
+    private void ThemDongMaDon()
+    {
+        danhSachMaDonVanChuyen.Add(
+            new MaDonVanChuyenInput()
+        );
+    }
+
+
+    // Xóa dòng
+    private void XoaDongMaDon(MaDonVanChuyenInput item)
+    {
+        danhSachMaDonVanChuyen.Remove(item);
+    }
+
+
+    // Submit form
+    private async Task HandleSubmit()
+    {
+        // Lấy các mã đơn hợp lệ
+        var danhSachMaDon = danhSachMaDonVanChuyen
+            .Select(x => x.MaDonVanChuyen.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+
+        // Không có mã đơn
+        if (!danhSachMaDon.Any())
+        {
+            isSuccess = false;
+            showModal = true;
+            return;
+        }
+
+
+        // Gán danh sách vào ViewModel
+        addShipmentDeliveryViewModel.maDonVanChuyens = danhSachMaDon;
+
+
+        isLoading = true;
+
+        try
+        {
+            // Lấy token
+            var token = await localStorage.GetItemAsync<string>("accessToken");
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                isSuccess = false;
+                showModal = true;
+                return;
+            }
+
+
+            // Gọi API
+            var result = await deliveryStaffServices.AddShipmentToDelivery(
+                addShipmentDeliveryViewModel,
+                token
+            );
+
+
+            // Hiển thị popup
+            isSuccess = result;
+            showModal = true;
+        }
+        catch (Exception)
+        {
+            isSuccess = false;
+            showModal = true;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    // Làm lại
+    private void LamLai()
+    {
+        addShipmentDeliveryViewModel = new AddShipmentDeliveryViewModel();
+
+        danhSachMaDonVanChuyen = new()
+        {
+            new MaDonVanChuyenInput()
+        };
+    }
+
+
+    // Đóng popup
+    private void DongModal()
+    {
+        showModal = false;
+    }
+
+
+    public void Dispose()
+    {
+        deliveryStaffServices.OnChange -= StateHasChanged;
+    }
+
+}

@@ -1,0 +1,129 @@
+@* TRANG ĐĂNG KÝ *@
+@page "/register"
+
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserServices userServices;
+
+@* Gọi footer dùng chung cho login và register *@
+@layout HeaderFooter
+
+<div class="container my-5">
+    <div class="text-end mb-3 ">
+        <span>Bạn đã có tài khoản?
+            <a href="/" class="text-danger">Đăng nhập ngay</a>
+        </span>
+    </div>
+
+    <h2 class="mb-4 text-danger">Đăng ký tài khoản</h2>
+
+    <!-- Hiển thị thông báo -->
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @successMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @errorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <EditForm Model="@register" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+       
+        <div class="p-4 border rounded bg-white shadow-sm">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Tên đăng nhập</label>
+                    <InputText class="form-control" @bind-Value="register.TenDangNhap" />
+                    <ValidationMessage For="@(() => register.TenDangNhap)" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Họ và tên</label>
+                    <InputText class="form-control" @bind-Value="register.HoTen" />
+                    <ValidationMessage For="@(() => register.HoTen)" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <InputText type="email" class="form-control" @bind-Value="register.Email" />
+                    <ValidationMessage For="@(() => register.Email)" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Số điện thoại</label>
+                    <InputText type="tel" class="form-control" @bind-Value="register.SoDienThoai" />
+                    <ValidationMessage For="@(() => register.SoDienThoai)" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Mật khẩu</label>
+                    <InputText type="password" class="form-control" @bind-Value="register.MatKhau" />
+                    <ValidationMessage For="@(() => register.MatKhau)" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Ngày sinh</label>
+                    <InputDate class="form-control" @bind-Value="register.NgaySinh" />
+                    <ValidationMessage For="@(() => register.NgaySinh)" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Địa chỉ</label>
+                    <InputText class="form-control" @bind-Value="register.DiaChi" />
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="reset" class="btn btn-outline-secondary">Làm mới</button>
+                <button type="submit" class="btn btn-danger">Đăng ký</button>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+
+
+@code {
+    private RegisterUserViewModel register = new RegisterUserViewModel();
+    private string? successMessage;
+    private string? errorMessage;
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userServices.OnChange += StateHasChanged;
+    }
+
+    
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await userServices.RegisterUser(register);
+            successMessage = "Đăng ký người dùng thành công!";
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Đăng ký thất bại: {ex.Message}";
+            successMessage = null;
+        }
+    }
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userServices.OnChange -= StateHasChanged;
+    }
+}

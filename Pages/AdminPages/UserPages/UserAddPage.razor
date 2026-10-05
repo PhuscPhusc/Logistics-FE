@@ -1,0 +1,203 @@
+@page "/addnewuser"
+
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+@implements IDisposable
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject UserAdminServices userServices;
+@inject RoleServices roleServices;
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <div class="flex-grow-1 p-3">
+
+            <div class="bg-danger text-dark w-100 p-2">
+                <h5 class="mb-0">Tạo người dùng mới</h5>
+            </div>
+            <EditForm Model="addUserViewModel" OnValidSubmit="HandleSubmit" class="row g-3 mt-5">
+                <DataAnnotationsValidator />
+                @* <ValidationSummary /> *@
+
+                <!-- Tên đăng nhập -->
+                <div class="col-md-6">
+                    <label for="TenDangNhap" class="form-label">Tên đăng nhập</label>
+                    <InputText class="form-control" id="TenDangNhap" @bind-Value="addUserViewModel.TenDangNhap" />
+                    <ValidationMessage For="@(() => addUserViewModel.TenDangNhap)" class="text-danger" />
+                </div>
+
+                <!-- Họ tên -->
+                <div class="col-md-6">
+                    <label for="HoTen" class="form-label">Họ tên</label>
+                    <InputText class="form-control" id="HoTen" @bind-Value="addUserViewModel.HoTen" />
+                    <ValidationMessage For="@(() => addUserViewModel.HoTen)" class="text-danger" />
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                    <label for="Email" class="form-label">Email</label>
+                    <InputText type="email" class="form-control" id="Email" @bind-Value="addUserViewModel.Email" />
+                    <ValidationMessage For="@(() => addUserViewModel.Email)" class="text-danger" />
+                </div>
+
+                <!-- Số điện thoại -->
+                <div class="col-md-6">
+                    <label for="SoDienThoai" class="form-label">Số điện thoại</label>
+                    <InputText type="tel" class="form-control" id="SoDienThoai"
+                               @bind-Value="addUserViewModel.SoDienThoai" />
+                    <ValidationMessage For="@(() => addUserViewModel.SoDienThoai)" class="text-danger" />
+                </div>
+
+                <!-- Mật khẩu -->
+                <div class="col-md-6">
+                    <label for="MatKhau" class="form-label">Mật khẩu</label>
+                    <InputText type="password" class="form-control" id="MatKhau"
+                               @bind-Value="addUserViewModel.MatKhau" />
+                    <ValidationMessage For="@(() => addUserViewModel.MatKhau)" class="text-danger" />
+                </div>
+
+                <!-- Địa chỉ -->
+                <div class="col-md-6">
+                    <label for="DiaChi" class="form-label">Địa chỉ</label>
+                    <InputText class="form-control" id="DiaChi" @bind-Value="addUserViewModel.DiaChi" />
+                    <ValidationMessage For="@(() => addUserViewModel.DiaChi)" class="text-danger" />
+                </div>
+
+                <!-- Ngày sinh -->
+                <div class="col-md-6">
+                    <label for="NgaySinh" class="form-label">Ngày sinh</label>
+                    <InputDate class="form-control" id="NgaySinh" @bind-Value="addUserViewModel.NgaySinh" />
+                    <ValidationMessage For="@(() => addUserViewModel.NgaySinh)" class="text-danger" />
+                </div>
+
+                <!-- Vai trò -->
+                <div class="col-md-6">
+                    <label class="form-label">Vai trò</label>
+                    @foreach (var role in roleServices.rolesViewModel)
+                    {
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" value="@role.Ten"
+                                   @onchange="e => OnRoleChanged(e, role.Ten)" />
+                            <label class="form-check-label">@role.Ten</label>
+                        </div>
+                    }
+                    <ValidationMessage For="@(() => addUserViewModel.TenVaiTros)" class="text-danger" />
+                </div>
+
+
+
+                <!-- Nút submit -->
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Thêm người dùng</button>
+                    <button type="reset" class="btn btn-secondary">Làm lại</button>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="/users" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Quay lại
+                    </a>
+                </div>
+            </EditForm>
+
+
+            <!-- Modal Bootstrap -->
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title" id="successModalLabel">Tạo người dùng thành công</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Tên đăng nhập:</strong> @addUserViewModel.TenDangNhap</p>
+                            <p><strong>Họ tên:</strong> @addUserViewModel.HoTen</p>
+                            <p><strong>Email:</strong> @addUserViewModel.Email</p>
+                            <p><strong>Số điện thoại:</strong> @addUserViewModel.SoDienThoai</p>
+                            <p><strong>Địa chỉ:</strong> @addUserViewModel.DiaChi</p>
+                            <p><strong>Ngày sinh:</strong> @(addUserViewModel.NgaySinh?.ToString("dd/MM/yyyy"))</p>
+                            <p><strong>Vai trò:</strong> @string.Join(", ", addUserViewModel.TenVaiTros)</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private AddUserViewModel addUserViewModel = new AddUserViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userServices.OnChange += StateHasChanged;
+        // Lấy token từ local storage
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+            
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+        await roleServices.GetAllRole(token);
+    }
+
+    private async Task HandleSubmit()
+    {
+        // Lấy token từ local storage
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        // Gọi service
+        var result = await userServices.AddNewUser(token, addUserViewModel);
+
+        if (result) // giả sử service trả về true khi thành công
+        {
+            // Gọi JS để bật modal Bootstrap
+            await JS.InvokeVoidAsync("bootstrapModalShow", "#successModal");
+        }
+    }
+
+    private void OnRoleChanged(ChangeEventArgs e, string roleName)
+    {
+        bool isChecked = (bool)e.Value;
+        if (isChecked)
+        {
+            if (!addUserViewModel.TenVaiTros.Contains(roleName))
+            {
+                addUserViewModel.TenVaiTros.Add(roleName);
+            }
+        }
+        else
+        {
+            addUserViewModel.TenVaiTros.Remove(roleName);
+        }
+    }
+
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userServices.OnChange -= StateHasChanged;
+    }
+}

@@ -1,0 +1,269 @@
+@page "/warehouseinfo"
+
+@inject HttpClient Http
+@implements IDisposable
+
+@inject WarehouseStaffServices warehouseStaffServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column min-vh-100 bg-light">
+
+    <!-- Mobile Navbar -->
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex flex-grow-1">
+
+        <!-- Desktop Sidebar -->
+        <div class="d-none d-lg-block">
+            <WarehouseStaffSidebarLayoutFull />
+        </div>
+
+        <!-- Main Content -->
+        <div class="container py-4">
+
+            <!-- Tiêu đề -->
+            <div class="d-flex align-items-center mb-4">
+
+                <div class="bg-primary text-white rounded-circle p-3 me-3">
+                    <i class="fas fa-warehouse fa-lg"></i>
+                </div>
+
+                <div>
+                    <h3 class="mb-1 fw-bold">
+                        Thông tin kho
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Thông tin kho mà bạn đang được phân công
+                    </p>
+                </div>
+
+            </div>
+
+
+            @if (warehouseStaffServices.warehouseInfoViewModel == null)
+            {
+                <!-- Loading -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center py-5">
+
+                        <div class="spinner-border text-primary mb-3" role="status">
+                        </div>
+
+                        <p class="text-muted mb-0">
+                            Đang tải thông tin kho...
+                        </p>
+
+                    </div>
+                </div>
+            }
+            else
+            {
+                var kho = warehouseStaffServices.warehouseInfoViewModel;
+
+                <!-- Thông tin kho -->
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-header bg-primary text-white">
+
+                        <h5 class="mb-0">
+                            <i class="fas fa-warehouse me-2"></i>
+                            Thông tin chi tiết
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body p-4">
+
+                        <div class="row g-4">
+
+                            <!-- Tên kho -->
+                            <div class="col-md-6">
+
+                                <div class="border rounded p-3 h-100">
+
+                                    <div class="d-flex align-items-center mb-2">
+
+                                        <i class="fas fa-building text-primary me-2"></i>
+
+                                        <span class="text-muted">
+                                            Tên kho
+                                        </span>
+
+                                    </div>
+
+                                    <h5 class="fw-bold mb-0">
+                                        @(string.IsNullOrWhiteSpace(kho.Ten)
+                                            ? "Chưa cập nhật"
+                                            : kho.Ten)
+                                    </h5>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Mã kho -->
+                            <div class="col-md-6">
+
+                                <div class="border rounded p-3 h-100">
+
+                                    <div class="d-flex align-items-center mb-2">
+
+                                        <i class="fas fa-barcode text-primary me-2"></i>
+
+                                        <span class="text-muted">
+                                            Mã kho
+                                        </span>
+
+                                    </div>
+
+                                    <h5 class="fw-bold mb-0">
+
+                                        @(string.IsNullOrWhiteSpace(kho.MaKho)
+                                            ? "Chưa cập nhật"
+                                            : kho.MaKho)
+
+                                    </h5>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Địa chỉ -->
+                            <div class="col-12">
+
+                                <div class="border rounded p-3">
+
+                                    <div class="d-flex align-items-center mb-2">
+
+                                        <i class="fas fa-map-marker-alt text-danger me-2"></i>
+
+                                        <span class="text-muted">
+                                            Địa chỉ kho
+                                        </span>
+
+                                    </div>
+
+                                    <h5 class="fw-bold mb-0">
+
+                                        @(string.IsNullOrWhiteSpace(kho.DiaChi)
+                                            ? "Chưa cập nhật"
+                                            : kho.DiaChi)
+
+                                    </h5>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Dữ liệu mở rộng -->
+                            <div class="col-12">
+
+                                <div class="border rounded p-3">
+
+                                    <div class="d-flex align-items-center mb-2">
+
+                                        <i class="fas fa-info-circle text-info me-2"></i>
+
+                                        <span class="text-muted">
+                                            Dữ liệu mở rộng
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="bg-light rounded p-3">
+
+                                        @if (string.IsNullOrWhiteSpace(kho.DuLieuMoRong))
+                                        {
+                                            <span class="text-muted">
+                                                Không có dữ liệu mở rộng
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            @kho.DuLieuMoRong
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Trạng thái phân công -->
+                <div class="card shadow-sm border-0 mt-4">
+
+                    <div class="card-body">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="bg-success text-white rounded-circle p-2 me-3">
+                                <i class="fas fa-check"></i>
+                            </div>
+
+                            <div>
+
+                                <h6 class="fw-bold mb-1">
+                                    Trạng thái phân công
+                                </h6>
+
+                                <span class="badge bg-success">
+                                    Đã được phân công vào kho
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        warehouseStaffServices.OnChange += StateHasChanged;
+
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            navManager.NavigateTo("/", true);
+            return;
+        }
+
+        await warehouseStaffServices.GetWarehouseInfoTheoIdWarehouseStaff(token);
+    }
+
+
+    public void Dispose()
+    {
+        warehouseStaffServices.OnChange -= StateHasChanged;
+    }
+
+}

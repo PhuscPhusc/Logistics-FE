@@ -1,0 +1,228 @@
+@page "/shiptmentandtrip"
+
+@inject HttpClient Http
+@implements IDisposable
+@inject OperationStaffServices operationStaffServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+<div class="d-flex flex-column min-vh-100 bg-light">
+
+    <!-- Mobile Navbar -->
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex flex-grow-1">
+
+        <!-- Desktop Sidebar -->
+        <div class="d-none d-lg-block">
+            <OperationStaffSidebarLayoutFull />
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid py-4">
+
+            <!-- Tiêu đề -->
+            <div class="mb-4">
+                <h3 class="fw-bold mb-1">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Đơn vận chuyển trong chuyến xe
+                </h3>
+
+                <p class="text-muted mb-0">
+                    Danh sách các đơn vận chuyển được phân công cho chuyến xe
+                </p>
+            </div>
+
+
+            <!-- Card danh sách -->
+            <div class="card border-0 shadow-sm">
+
+                <!-- Header -->
+                <div class="card-header bg-white border-0 py-3">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                Danh sách đơn vận chuyển
+                            </h5>
+
+                            <small class="text-muted">
+                                Thông tin người nhận
+                            </small>
+                        </div>
+
+                        <button class="btn btn-outline-primary"
+                                @onclick="LoadShipmentInfo">
+
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            Làm mới
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Body -->
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th class="px-4" style="width: 70px;">
+                                        STT
+                                    </th>
+
+                                    <th>
+                                        Mã vận chuyển
+                                    </th>
+
+                                    <th>
+                                        Địa chỉ người nhận
+                                    </th>
+
+                                    <th>
+                                        Số điện thoại người nhận
+                                    </th>
+
+                                    <th class="text-center" style="width: 150px;">
+                                        Thao tác
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @if (operationStaffServices.shipmentInfoInTripViews != null &&
+                                     operationStaffServices.shipmentInfoInTripViews.Any())
+                                {
+                                    var stt = 1;
+
+                                    @foreach (var item in operationStaffServices.shipmentInfoInTripViews)
+                                    {
+                                        <tr>
+
+                                            <!-- STT -->
+                                            <td class="px-4">
+                                                @stt
+                                            </td>
+
+                                            <!-- Mã vận chuyển -->
+                                            <td>
+                                                <span class="fw-semibold text-primary">
+                                                    @item.MaVanChuyen
+                                                </span>
+                                            </td>
+
+                                            <!-- Địa chỉ người nhận -->
+                                            <td>
+                                                <i class="bi bi-geo-alt text-danger me-2"></i>
+                                                @item.DiaChiNguoiNhan
+                                            </td>
+
+                                            <!-- Số điện thoại -->
+                                            <td>
+                                                <i class="bi bi-telephone me-2"></i>
+                                                @item.SoDienThoaiNguoiNhan
+                                            </td>
+
+                                            <!-- Thao tác -->
+                                            <td class="text-center">
+
+                                                <button class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye me-1"></i>
+                                                    Xem
+                                                </button>
+
+                                            </td>
+
+                                        </tr>
+
+                                        stt++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+
+                                        <td colspan="5" class="text-center py-5">
+
+                                            <div class="text-muted">
+
+                                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+
+                                                <div class="fw-semibold">
+                                                    Chưa có đơn vận chuyển
+                                                </div>
+
+                                                <small>
+                                                    Chuyến xe hiện chưa có đơn vận chuyển nào.
+                                                </small>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        operationStaffServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+        await LoadShipmentInfo();
+    }
+
+
+    private async Task LoadShipmentInfo()
+    {
+        var token = await localStorage.GetItemAsync<string>("accessToken");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            await operationStaffServices.GetInfoShipmentInTrip(token);
+        }
+    }
+
+
+    public void Dispose()
+    {
+        operationStaffServices.OnChange -= StateHasChanged;
+    }
+}

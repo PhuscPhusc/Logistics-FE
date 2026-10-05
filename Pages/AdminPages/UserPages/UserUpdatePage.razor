@@ -1,0 +1,259 @@
+@page "/userupdate/{id:guid}"
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserAdminServices userServices;
+@inject RoleServices roleServices;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject IJSRuntime JS
+@inject NavigationManager navManager
+
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <div class="flex-grow-1 p-3">
+
+            <div class="bg-danger text-dark w-100 p-2">
+                <h5 class="mb-0">Chỉnh sửa thông tin người dùng</h5>
+            </div>
+            <EditForm Model="updateUserViewModel" OnValidSubmit="HandleSubmit">
+                <!-- Tên đăng nhập -->
+                <div class="mb-3">
+                    <label for="TenDangNhap" class="form-label">Tên đăng nhập</label>
+                    <InputText class="form-control" id="TenDangNhap" @bind-Value="updateUserViewModel.TenDangNhap" />
+                </div>
+
+                <!-- Họ tên -->
+                <div class="mb-3">
+                    <label for="HoTen" class="form-label">Họ tên</label>
+                    <InputText class="form-control" id="HoTen" @bind-Value="updateUserViewModel.HoTen" />
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label for="Email" class="form-label">Email</label>
+                    <InputText class="form-control" id="Email" @bind-Value="updateUserViewModel.Email" />
+                </div>
+
+                <!-- Số điện thoại -->
+                <div class="mb-3">
+                    <label for="SoDienThoai" class="form-label">Số điện thoại</label>
+                    <InputText class="form-control" id="SoDienThoai" @bind-Value="updateUserViewModel.SoDienThoai" />
+                </div>
+
+                <!-- Mật khẩu -->
+                <div class="mb-3">
+                    <label for="MatKhau" class="form-label">Mật khẩu</label>
+                    <InputText class="form-control" id="MatKhau" type="password"
+                               @bind-Value="updateUserViewModel.MatKhau" />
+                </div>
+
+                <!-- Địa chỉ -->
+                <div class="mb-3">
+                    <label for="DiaChi" class="form-label">Địa chỉ</label>
+                    <InputTextArea class="form-control" id="DiaChi" rows="3" @bind-Value="updateUserViewModel.DiaChi" />
+                </div>
+
+                <!-- Vai trò -->
+                <div class="mb-3">
+                    <label class="form-label">Vai trò</label>
+                    @foreach (var role in roleServices.rolesViewModel)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="@role.Ten"
+                                   checked="@userServices.userDetailViewModel.VaiTros.Any(v => v.Ten == role.Ten)"
+                                   @onchange="e => OnRoleChanged(role.Ten, e.Value)">
+                            <label class="form-check-label">@role.Ten</label>
+                        </div>
+                    }
+                </div>
+
+                <!-- Nút submit -->
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+
+                <!-- Nút quay lại -->
+                <div class="text-end mt-3">
+                    <a href="/users" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Quay lại
+                    </a>
+                </div>
+            </EditForm>
+
+            <!-- Modal Bootstrap -->
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title" id="successModalLabel">Cập nhật người dùng thành công</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Tên đăng nhập:</strong> @updateUserViewModel.TenDangNhap</p>
+                            <p><strong>Họ tên:</strong> @updateUserViewModel.HoTen</p>
+                            <p><strong>Email:</strong> @updateUserViewModel.Email</p>
+                            <p><strong>Số điện thoại:</strong> @updateUserViewModel.SoDienThoai</p>
+                            <p><strong>Địa chỉ:</strong> @updateUserViewModel.DiaChi</p>
+                            <p><strong>Vai trò:</strong> @string.Join(", ", updateUserViewModel.TenVaiTros)</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+    private UpdateUserViewModel updateUserViewModel = new UpdateUserViewModel();
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+        // Tìm email từ list user load trong giao diện users
+        var email = userServices.usersViewModels.FirstOrDefault(u => u.Id == id)?.Email;// tìm user có Id bằng với id trên URL, rồi trả về Email của user
+        if (email != null)
+        {
+            await roleServices.GetAllRole(token);
+            await userServices.GetDetailUser(token, email);
+
+            updateUserViewModel.TenDangNhap = userServices.userDetailViewModel.TenDangNhap;
+            updateUserViewModel.HoTen = userServices.userDetailViewModel.HoTen;
+            updateUserViewModel.Email = userServices.userDetailViewModel.Email;
+            updateUserViewModel.SoDienThoai = userServices.userDetailViewModel.SoDienThoai;
+            updateUserViewModel.DiaChi = userServices.userDetailViewModel.DiaChi;
+            updateUserViewModel.TenVaiTros = userServices.userDetailViewModel.VaiTros.Select(v => v.Ten!).ToList();
+        }
+    }
+
+    private void OnRoleChanged(string roleName, object? isChecked)
+    {
+        if ((bool)isChecked!)
+        {
+            if (!updateUserViewModel.TenVaiTros.Contains(roleName))
+            {
+                updateUserViewModel.TenVaiTros.Add(roleName);
+            }
+        }
+        else
+        {
+            updateUserViewModel.TenVaiTros.Remove(roleName);
+        }
+    }
+
+
+    private async Task HandleSubmit()
+    {
+        // Lấy token từ local storage
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        // Gọi service
+        var result = await userServices.UpdateUser(token, userServices.userDetailViewModel.Email, updateUserViewModel);
+        Console.WriteLine(JsonSerializer.Serialize(updateUserViewModel));
+
+
+        if (result) // giả sử service trả về true khi thành công
+        {
+            // Gọi JS để bật modal Bootstrap
+            await JS.InvokeVoidAsync("bootstrapModalShow", "#successModal");
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userServices.OnChange -= StateHasChanged;
+    }
+}
+
+
+@*  
+GHI CHÚ VẤN ĐỀ GẶP PHẢI: Hiển thị toàn bộ role lên, lấy toàn bộ thông tin user(kèm theo role được gán). Nếu role nào được gán thì tick xanh vào ô
+Mô tả vấn đề của bạn:
+    - Bạn có danh sách tất cả role (roleServices.rolesViewModel) với mỗi phần tử là RoleViewModel.
+    - Bạn có thông tin chi tiết user (userServices.userDetailViewModel) trong đó thuộc tính VaiTros là List<VaiTroNguoiDungDTO>.
+    - Khi render checkbox, bạn muốn tick sẵn những role mà user đã được gán.
+    - Tuy nhiên, bạn viết checked="@userServices.userDetailViewModel.VaiTros.Contains(role.Ten)" → bị lỗi vì VaiTros là danh sách object (VaiTroNguoiDungDTO), không phải danh sách string.
+
+Cách giải quyết:
+    - Thay vì Contains, bạn cần kiểm tra trên thuộc tính Ten của từng phần tử trong VaiTros.
+    - Sử dụng LINQ Any(v => v.Ten == role.Ten) để so sánh.
+*@
+
+
+@*  
+Để bạn note lại rõ ràng, lỗi 400 `"Email hoặc Tên đăng nhập hoặc số điện thoại đã tồn tại"` xuất hiện không phải do FE gửi sai payload, mà do **logic kiểm tra trùng lặp ở BE**.  
+
+### 📌 Chi tiết lỗi
+Trong BE, đoạn code kiểm tra trùng lặp viết như sau:
+
+```csharp
+var existingUser = await _nguoiDungRepository
+    .SingleOrDefaultAsync(nd => nd.Id != nguoiDung.Id &&
+        (nd.Email == nguoiDungUpdateDTO.Email) ||
+        (nd.TenDangNhap == nguoiDungUpdateDTO.TenDangNhap) ||
+        (nd.SoDienThoai == nguoiDungUpdateDTO.SoDienThoai));
+```
+
+- Trong C#, toán tử `&&` có độ ưu tiên cao hơn `||`.  
+- Nên biểu thức trên thực tế được hiểu là:  
+  ```csharp
+  (nd.Id != nguoiDung.Id && nd.Email == newEmail)
+  || (nd.TenDangNhap == newTenDangNhap)
+  || (nd.SoDienThoai == newSoDienThoai)
+  ```
+- Hậu quả: chỉ cần có bất kỳ user nào có cùng `TenDangNhap` hoặc `SoDienThoai`, BE sẽ coi là trùng **mà không cần check Id khác**.  
+- Vì vậy khi bạn update chính user đó, BE vẫn báo lỗi trùng.
+
+### ✅ Cách fix
+Thêm ngoặc để nhóm điều kiện đúng:
+
+```csharp
+var existingUser = await _nguoiDungRepository
+    .SingleOrDefaultAsync(nd => nd.Id != nguoiDung.Id &&
+        (nd.Email == nguoiDungUpdateDTO.Email
+         || nd.TenDangNhap == nguoiDungUpdateDTO.TenDangNhap
+         || nd.SoDienThoai == nguoiDungUpdateDTO.SoDienThoai));
+```
+
+→ Lúc này BE sẽ chỉ báo trùng nếu **Id khác** và **Email/Username/SĐT trùng**.
+
+---
+
+### 💡 Note lại trong code
+- **Nguyên nhân**: thiếu ngoặc, dẫn đến sai thứ tự ưu tiên toán tử.  
+- **Triệu chứng**: BE báo lỗi trùng lặp ngay cả khi update chính user đó.  
+- **Giải pháp**: thêm ngoặc để đảm bảo điều kiện `Id != nguoiDung.Id` áp dụng cho tất cả các trường cần check (`Email`, `TenDangNhap`, `SoDienThoai`).  
+
+👉 Bạn chỉ cần sửa lại điều kiện như trên, FE sẽ không còn bị báo lỗi 400 khi dữ liệu thực sự không trùng.
+*@

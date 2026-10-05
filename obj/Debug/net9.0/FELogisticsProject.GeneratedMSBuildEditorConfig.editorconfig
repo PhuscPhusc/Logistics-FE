@@ -1,0 +1,217 @@
+is_global = true
+build_property.TargetFramework = net9.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = FELogisticsProject
+build_property.RootNamespace = FELogisticsProject
+build_property.ProjectDir = D:\Code\LogisticsProject\FE_Blazor_LogisticsProject\FELogisticsProject\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\Code\LogisticsProject\FE_Blazor_LogisticsProject\FELogisticsProject
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 9.0
+build_property.EnableCodeStyleSeverity = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Components/AdminNavbarLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZG1pbk5hdmJhckxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Components/AdminSidebarLayoutFull.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZG1pblNpZGViYXJMYXlvdXRGdWxsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Components/CustomerSidebarLayoutFull.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDdXN0b21lclNpZGViYXJMYXlvdXRGdWxsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Components/DeliveryStaffSidebarLayoutFull.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEZWxpdmVyeVN0YWZmU2lkZWJhckxheW91dEZ1bGwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Components/OperationStaffSidebarLayoutFull.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xPcGVyYXRpb25TdGFmZlNpZGViYXJMYXlvdXRGdWxsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Components/WarehouseStaffSidebarLayoutFull.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xXYXJlaG91c2VTdGFmZlNpZGViYXJMYXlvdXRGdWxsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/DetailPage/DetailPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xEZXRhaWxQYWdlXERldGFpbFBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/RolePages/AddRolePage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xSb2xlUGFnZXNcQWRkUm9sZVBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/RolePages/RolesPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xSb2xlUGFnZXNcUm9sZXNQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/TripPages/AddTripPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xUcmlwUGFnZXNcQWRkVHJpcFBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/TripPages/TripsPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xUcmlwUGFnZXNcVHJpcHNQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/UserPages/HomePage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xVc2VyUGFnZXNcSG9tZVBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/UserPages/UserAddPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xVc2VyUGFnZXNcVXNlckFkZFBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/UserPages/UserDetailPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xVc2VyUGFnZXNcVXNlckRldGFpbFBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/UserPages/UsersPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xVc2VyUGFnZXNcVXNlcnNQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/UserPages/UserUpdatePage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xVc2VyUGFnZXNcVXNlclVwZGF0ZVBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/VehiclePages/AddUserAndVehiclePage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xWZWhpY2xlUGFnZXNcQWRkVXNlckFuZFZlaGljbGVQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/VehiclePages/AddVehiclePage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xWZWhpY2xlUGFnZXNcQWRkVmVoaWNsZVBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/VehiclePages/VehiclesPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xWZWhpY2xlUGFnZXNcVmVoaWNsZXNQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/WareHousePages/AddUserAndWareHousePage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xXYXJlSG91c2VQYWdlc1xBZGRVc2VyQW5kV2FyZUhvdXNlUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/WareHousePages/AddWareHousePage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xXYXJlSG91c2VQYWdlc1xBZGRXYXJlSG91c2VQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/WareHousePages/UpdateWareHousePage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xXYXJlSG91c2VQYWdlc1xVcGRhdGVXYXJlSG91c2VQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/WareHousePages/UserWareHousesPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xXYXJlSG91c2VQYWdlc1xVc2VyV2FyZUhvdXNlc1BhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/AdminPages/WareHousePages/WareHousesPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdlc1xXYXJlSG91c2VQYWdlc1xXYXJlSG91c2VzUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/CustomerPages/CustomerHomePage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VzdG9tZXJQYWdlc1xDdXN0b21lckhvbWVQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/CustomerPages/CustomerUpdateInfoPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VzdG9tZXJQYWdlc1xDdXN0b21lclVwZGF0ZUluZm9QYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/CustomerPages/Shipment/ShipmentDetailPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VzdG9tZXJQYWdlc1xTaGlwbWVudFxTaGlwbWVudERldGFpbFBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/CustomerPages/Shipment/ShipmentHistoryInfoPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VzdG9tZXJQYWdlc1xTaGlwbWVudFxTaGlwbWVudEhpc3RvcnlJbmZvUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/CustomerPages/Shipment/UserCreateShipmentPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VzdG9tZXJQYWdlc1xTaGlwbWVudFxVc2VyQ3JlYXRlU2hpcG1lbnRQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/CustomerPages/Shipment/UserListShipmentPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VzdG9tZXJQYWdlc1xTaGlwbWVudFxVc2VyTGlzdFNoaXBtZW50UGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/CustomerPages/Shipment/UserUpdateShipmentPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VzdG9tZXJQYWdlc1xTaGlwbWVudFxVc2VyVXBkYXRlU2hpcG1lbnRQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/DeliveryStaffPages/AddShipmentDeliveryPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVsaXZlcnlTdGFmZlBhZ2VzXEFkZFNoaXBtZW50RGVsaXZlcnlQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/DeliveryStaffPages/DeliveryStaffDetailInfoPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVsaXZlcnlTdGFmZlBhZ2VzXERlbGl2ZXJ5U3RhZmZEZXRhaWxJbmZvUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/DeliveryStaffPages/ShipmentDeliveryInfoPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVsaXZlcnlTdGFmZlBhZ2VzXFNoaXBtZW50RGVsaXZlcnlJbmZvUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/DeliveryStaffPages/UpdateShipmentDeliveryInfoPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVsaXZlcnlTdGFmZlBhZ2VzXFVwZGF0ZVNoaXBtZW50RGVsaXZlcnlJbmZvUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/OperationStaffPages/AddShipmentToTripPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3BlcmF0aW9uU3RhZmZQYWdlc1xBZGRTaGlwbWVudFRvVHJpcFBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/OperationStaffPages/OperationStaffDetailInfoPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3BlcmF0aW9uU3RhZmZQYWdlc1xPcGVyYXRpb25TdGFmZkRldGFpbEluZm9QYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/OperationStaffPages/ShipmentInfoAndTripPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3BlcmF0aW9uU3RhZmZQYWdlc1xTaGlwbWVudEluZm9BbmRUcmlwUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/RegisterPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVnaXN0ZXJQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/WarehouseStaffPages/ShipmentItemsPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcV2FyZWhvdXNlU3RhZmZQYWdlc1xTaGlwbWVudEl0ZW1zUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/WarehouseStaffPages/WarehouseInfoPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcV2FyZWhvdXNlU3RhZmZQYWdlc1xXYXJlaG91c2VJbmZvUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/WarehouseStaffPages/WarehouseStaffAddShipmentItemPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcV2FyZWhvdXNlU3RhZmZQYWdlc1xXYXJlaG91c2VTdGFmZkFkZFNoaXBtZW50SXRlbVBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/WarehouseStaffPages/WarehouseStaffInfoDetailPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcV2FyZWhvdXNlU3RhZmZQYWdlc1xXYXJlaG91c2VTdGFmZkluZm9EZXRhaWxQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Shared/HeaderFooter.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXEhlYWRlckZvb3Rlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Shared/HomeMasterPage.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXEhvbWVNYXN0ZXJQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Code/LogisticsProject/FE_Blazor_LogisticsProject/FELogisticsProject/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 

@@ -1,0 +1,163 @@
+@page "/addtrip"
+
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject IJSRuntime JS
+
+@inject UserAdminServices userAdminServices;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-primary">Tạo chuyến xe mới</h2>
+
+            <!-- Form nhập thông tin chuyến xe -->
+            <EditForm Model="@addTripInfo" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="p-4 border rounded bg-white shadow-sm">
+                    <div class="mb-3">
+                        <label class="form-label">Biển số phương tiện</label>
+                        <InputText class="form-control" @bind-Value="addTripInfo.BienSoPhuongTien" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email hoặc tên đăng nhập tài xế</label>
+                        <InputText class="form-control" @bind-Value="addTripInfo.EmailOrUser" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mã kho xuất phát</label>
+                        <InputText class="form-control" @bind-Value="addTripInfo.MaKhoXuatPhat" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mã kho đích đến</label>
+                        <InputText class="form-control" @bind-Value="addTripInfo.MaKhoDichDen" />
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="reset" class="btn btn-outline-secondary">Làm mới</button>
+                        <button type="submit" class="btn btn-primary">Tạo chuyến xe</button>
+                    </div>
+                </div>
+            </EditForm>
+
+            <div class="text-end mt-3">
+                <a href="/vehicles" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Thoát
+                </a>
+            </div>
+
+            <!-- Modal Bootstrap -->
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title" id="successModalLabel">Thêm chuyến xe thành công</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Mã chuyến:</strong> @userAdminServices.infoTripView.MaChuyen</p>
+                            <p><strong>Loại phương tiện:</strong> @userAdminServices.infoTripView.LoaiPhuongTien</p>
+                            <p><strong>Tên tài xế:</strong> @userAdminServices.infoTripView.TenTaiXe</p>
+                            <p><strong>Biển số phương tiện:</strong> @userAdminServices.infoTripView.BienSoPhuongTien
+                            </p>
+                            <hr>
+                            <p><strong>Kho xuất phát:</strong> @userAdminServices.infoTripView.TenKhoXuatPhat</p>
+                            <p><strong>Mã kho xuất phát:</strong> @userAdminServices.infoTripView.MaKhoXuatPhat</p>
+                            <p><strong>Địa chỉ kho xuất phát:</strong> @userAdminServices.infoTripView.DiaChiKhoXuatPhat
+                            </p>
+                            <hr>
+                            <p><strong>Kho đích:</strong> @userAdminServices.infoTripView.TenKhoDich</p>
+                            <p><strong>Mã kho đích:</strong> @userAdminServices.infoTripView.MaKhoDich</p>
+                            <p><strong>Địa chỉ kho đích:</strong> @userAdminServices.infoTripView.DiaChiKhoDich</p>
+                            <hr>
+                            <p><strong>Trạng thái:</strong> @userAdminServices.infoTripView.TrangThai</p>
+                            <p><strong>Ngày tạo:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@code {
+    private AddTripViewModel addTripInfo = new AddTripViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userAdminServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        var result = await userAdminServices.AddTaiXeVaChuyenXe(
+            token,
+            addTripInfo.BienSoPhuongTien!,
+            addTripInfo.EmailOrUser!,
+            addTripInfo.MaKhoXuatPhat!,
+            addTripInfo.MaKhoDichDen!
+        );
+
+        if (result) // giả sử service trả về true khi thành công
+        {
+            // Gọi JS để bật modal Bootstrap
+            await JS.InvokeVoidAsync("bootstrapModalShow", "#successModal");
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userAdminServices.OnChange -= StateHasChanged;
+    }
+
+    public class AddTripViewModel
+    {
+        public string? BienSoPhuongTien { get; set; }
+        public string? EmailOrUser { get; set; }
+        public string? MaKhoXuatPhat { get; set; }
+        public string? MaKhoDichDen { get; set; }
+    }
+}

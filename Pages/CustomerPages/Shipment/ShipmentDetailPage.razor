@@ -1,0 +1,284 @@
+@page "/shipmentdetail/{id:guid}"
+
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserServices userServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+    <div class="d-flex">
+        <div class="d-none d-lg-block">
+            <CustomerSidebarLayoutFull />
+        </div> <!-- Nội dung chính -->
+        <div class="container-fluid py-4"> <!-- ===================== HEADER ===================== -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-1"> <i class="fas fa-box me-2"></i> Chi tiết đơn vận chuyển </h3>
+                    <p class="text-muted mb-0"> Thông tin chi tiết của đơn vận chuyển </p>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="/shipment" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Quay lại
+                    </a>
+                </div>
+            </div> @if (userServices.shipmentDetailInfoView == null) {
+            <div class="alert alert-info"> <i class="fas fa-spinner fa-spin me-2"></i> Đang tải thông tin đơn vận
+                chuyển... </div>
+            } else
+            {
+                var
+            shipment = userServices.shipmentDetailInfoView;
+                <!-- ===================== THÔNG TIN ĐƠN ===================== -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"> <i class="fas fa-file-invoice me-2"></i> Thông tin đơn vận chuyển </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4"> <!-- Mã vận chuyển -->
+                            <div class="col-md-4"> <label class="form-label text-muted"> Mã vận chuyển </label>
+                                <div class="fw-bold text-primary fs-5"> @shipment.MaVanChuyen </div>
+                            </div> <!-- Trạng thái -->
+                            <div class="col-md-4"> <label class="form-label text-muted"> Trạng thái </label>
+                                <div> @{
+                                    var statusClass = shipment.TrangThai switch
+                                    {
+                                        "Created" => "bg-primary",
+                                        "Picking" => "bg-warning text-dark",
+                                        "InTransit" => "bg-info text-dark",
+                                        "AtWarehouse" =>
+                                  "bg-secondary",
+                                        "OutForDelivery" => "bg-info text-dark",
+                                        "Delivered" => "bg-success",
+                                        "Failed" => "bg-danger",
+                                        "Cancelled" => "bg-dark",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @statusClass px-3 py-2"> @shipment.TrangThai </span>
+                            </div>
+                        </div> <!-- Ngày tạo -->
+                        <div class="col-md-4"> <label class="form-label text-muted"> Ngày tạo </label>
+                            <div class="fw-semibold"> @(shipment.NgayTao?.ToString("dd/MM/yyyy HH:mm")) </div>
+                        </div> <!-- Quãng đường -->
+                        <div class="col-md-4"> <label class="form-label text-muted"> Quãng đường </label>
+                            <div class="fw-semibold"> @(shipment.QuangDuong?.ToString("N2") ?? "Chưa cập nhật") Km
+                            </div>
+                        </div> <!-- Tổng khối lượng -->
+                        <div class="col-md-4"> <label class="form-label text-muted"> Tổng khối lượng </label>
+                            <div class="fw-semibold"> @(shipment.TongKhoiLuong?.ToString("N2") ?? "Chưa cập nhật") Kg
+                            </div>
+                        </div> <!-- Tổng thể tích -->
+                        <div class="col-md-4"> <label class="form-label text-muted"> Tổng thể tích </label>
+                            <div class="fw-semibold"> @(shipment.TongTheTich?.ToString("N2") ?? "Chưa cập nhật") m³
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- ===================== NGƯỜI GỬI / NGƯỜI NHẬN ===================== -->
+            <div class="row g-4 mb-4"> <!-- NGƯỜI GỬI -->
+                <div class="col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"> <i class="fas fa-user me-2"></i> Người gửi </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3"> <label class="form-label text-muted"> Họ và tên </label>
+                                <div class="fw-semibold"> @shipment.TenNguoiGui </div>
+                            </div>
+                            <div> <label class="form-label text-muted"> Địa chỉ </label>
+                                <div class="fw-semibold"> @shipment.DiaChiNguoiGui </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- NGƯỜI NHẬN -->
+                <div class="col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"> <i class="fas fa-user-check me-2"></i> Người nhận </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3"> <label class="form-label text-muted"> Họ và tên </label>
+                                <div class="fw-semibold"> @shipment.TenNguoiNhan </div>
+                            </div>
+                            <div class="mb-3"> <label class="form-label text-muted"> Số điện thoại </label>
+                                <div class="fw-semibold"> @shipment.SoDienThoaiNguoiNhan </div>
+                            </div>
+                            <div> <label class="form-label text-muted"> Địa chỉ </label>
+                                <div class="fw-semibold"> @shipment.DiaChiNguoiNhan </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- ===================== DANH SÁCH KIỆN HÀNG ===================== -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"> <i class="fas fa-boxes me-2"></i> Danh sách kiện hàng </h5> <span
+                        class="badge bg-dark"> @shipment.dsKienHang.Count kiện hàng </span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center"> # </th>
+                                    <th> Hình ảnh </th>
+                                    <th> Tên hàng </th>
+                                    <th> Loại hàng hóa </th>
+                                    <th> Mô tả </th>
+                                    <th class="text-center"> Khối lượng </th>
+                                    <th class="text-center"> Thể tích </th>
+                                    <th class="text-end"> Tổng tiền </th>
+                                    <th> Ghi chú </th>
+                                </tr>
+                            </thead>
+                            <tbody> @foreach (var kh in shipment.dsKienHang.Select((value, index) => new { value, index
+                            })) {
+                                <tr>
+                                    <td class="text-center fw-bold"> @(kh.index + 1) </td> <!-- Hình ảnh -->
+                                    <td> @if (!string.IsNullOrEmpty(kh.value.HinhAnh)) {
+                                        <img src="@kh.value.HinhAnh" alt="@kh.value.TenHang" class="rounded border"
+                                             style="width:70px;height:70px;object-fit:cover;" />
+                                    } else
+                                    {
+
+                                        <span class="text-muted"> Không có ảnh </span>
+                                    }
+                                </td> <!-- Tên hàng -->
+                                <td class="fw-semibold"> @kh.value.TenHang </td> <!-- Loại hàng -->
+                                <td> <span class="badge bg-info text-dark"> @kh.value.LoaiHangHoa </span> </td>
+                                <!-- Mô tả -->
+                                <td> @(string.IsNullOrEmpty(kh.value.MoTa) ? "Không có" : kh.value.MoTa) </td>
+                                <!-- Khối lượng -->
+                                <td class="text-center"> @(kh.value.KhoiLuong?.ToString("N2") ?? "Chưa cập nhật") Kg
+                                </td> <!-- Thể tích -->
+                                <td class="text-center"> @(kh.value.TheTich?.ToString("N2") ?? "Chưa cập nhật") m³
+                                </td> <!-- Tổng tiền -->
+                                <td class="text-end fw-bold text-danger"> @(kh.value.TongTien?.ToString("N0") ??
+                                                                                                                                                     "0") ₫ </td> <!-- Ghi chú -->
+                                    <td> @(string.IsNullOrEmpty(kh.value.GhiChu) ? "Không có" : kh.value.GhiChu) </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- ===================== CHI TIẾT CHI PHÍ ===================== -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"> <i class="fas fa-money-bill-wave me-2"></i> Chi tiết chi phí </h5>
+            </div>
+            <div class="card-body"> @foreach (var kh in shipment.dsKienHang) {
+                <div class="mb-4">
+                    <div class="fw-bold mb-2"> <i class="fas fa-box me-1"></i> @kh.TenHang </div> @if (kh.ChiPhi !=
+                    null && kh.ChiPhi.Any()) {
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th> Khối lượng từ </th>
+                                        <th> Khối lượng đến </th>
+                                        <th class="text-end"> Giá mỗi Kg </th>
+                                        <th class="text-end"> Phí cố định </th>
+                                    </tr>
+                                </thead>
+                                <tbody> @foreach (var phi in kh.ChiPhi) {
+                                    <tr>
+                                        <td> @(phi.KhoiLuongTu?.ToString("N2") ?? "-") Kg </td>
+                                        <td> @(phi.KhoiLuongDen?.ToString("N2") ?? "-") Kg </td>
+                                        <td class="text-end"> @(phi.GiaMoiKg?.ToString("N0") ?? "0") ₫ / Kg </td>
+                                        <td class="text-end"> @(phi.PhiCoDinh?.ToString("N0") ?? "0") ₫ </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                } else
+                {
+
+                    <div class="text-muted"> Không có thông tin chi phí. </div>
+                }
+            </div>
+        }
+    </div>
+</div> <!-- ===================== TỔNG TIỀN ===================== -->
+<div class="row justify-content-end mb-5">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2"> <span class="text-muted"> Tổng khối lượng
+                </span> <span class="fw-semibold"> @(shipment.TongKhoiLuong?.ToString("N2") ?? "0") Kg
+            </span> </div>
+            <div class="d-flex justify-content-between mb-2"> <span class="text-muted"> Tổng thể tích
+            </span> <span class="fw-semibold"> @(shipment.TongTheTich?.ToString("N2") ?? "Chưa cập nhật") m³ </span> </div>
+            <div class="d-flex justify-content-between mb-3"> <span class="text-muted"> Quãng đường
+            </span> <span class="fw-semibold"> @(shipment.QuangDuong?.ToString("N2") ?? "0") Km
+        </span> </div>
+        <hr />
+        <div class="d-flex justify-content-between align-items-center"> <span class="fw-bold fs-5">
+            Tổng tiền </span> <span class="fw-bold fs-4 text-danger">
+            @(shipment.TongTien?.ToString("N0") ?? "0") ₫ </span> </div>
+        </div>
+    </div>
+</div>
+</div>
+}
+</div>
+</div>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+
+        var maDonVanChuyen = userServices.shipmentInfoViewModels.FirstOrDefault(u => u.Id == id)?.MaVanChuyen;
+        if (maDonVanChuyen != null)
+        {
+            await userServices.GetDonVanChuyenDetail(token, maDonVanChuyen);
+        }
+    }
+
+    public override async Task SetParametersAsync(ParameterView param)
+    {
+        await base.SetParametersAsync(param);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Chạy 1 lần sau render đầu tiên
+            await Task.Delay(100);
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userServices.OnChange -= StateHasChanged;
+    }
+}

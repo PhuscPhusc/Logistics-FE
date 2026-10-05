@@ -1,0 +1,100 @@
+@page "/trips"
+
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserAdminServices userAdminServices;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject NavigationManager navManager
+
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-primary">Danh sách chuyến xe</h2>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-danger text-dark">
+                            <tr>
+                                <th scope="col">Mã chuyến</th>
+                                <th scope="col">Loại phương tiện</th>
+                                <th scope="col">Tên tài xế</th>
+                                <th scope="col">Biển số</th>
+                                <th scope="col">Kho xuất phát</th>
+                                <th scope="col">Địa chỉ kho xuất phát</th>
+                                <th scope="col">Mã kho xuất phát</th>
+                                <th scope="col">Kho đích</th>
+                                <th scope="col">Địa chỉ kho đích</th>
+                                <th scope="col">Mã kho xuất đích</th>
+                                <th scope="col">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var trip in userAdminServices.infoTripViews)
+                            {
+                            <!-- Ví dụ dữ liệu mẫu -->
+                                <tr>
+                                    <td><span class="badge bg-success">@trip.MaChuyen</span></td>
+                                    <td>@trip.LoaiPhuongTien</td>
+                                    <td><span class="badge bg-success">@trip.TenTaiXe</span></td>
+                                    <td>@trip.BienSoPhuongTien</td>
+                                    <td>@trip.TenKhoXuatPhat</td>
+                                    <td>@trip.DiaChiKhoXuatPhat</td>
+                                    <td><span class="badge bg-success">@trip.MaKhoXuatPhat</span></td>
+                                    <td>@trip.TenKhoDich</td>
+                                    <td>@trip.DiaChiKhoDich</td>
+                                    <td><span class="badge bg-success">@trip.MaKhoDich</span></td>
+                                    <td>@trip.TrangThai</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+       userAdminServices.OnChange += StateHasChanged;
+       string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+       await userAdminServices.GetAllThongTinChuyenXe(token);
+    }
+
+
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userAdminServices.OnChange -= StateHasChanged;
+    }
+}

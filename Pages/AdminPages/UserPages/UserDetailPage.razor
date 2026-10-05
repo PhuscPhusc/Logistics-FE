@@ -1,0 +1,169 @@
+@page "/userdetail/{id:guid}"
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserAdminServices userServices;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject NavigationManager navManager
+
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="flex-grow-1 p-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-black">
+                    <h5 class="mb-0">Thông tin Người Dùng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-2 text-center">
+                            <img src="https://via.placeholder.com/100" class="img-thumbnail rounded-circle"
+                                 alt="Ảnh đại diện">
+                        </div>
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <p><strong>Họ tên:</strong> @userServices.userDetailViewModel.HoTen</p>
+                                    <p><strong>Tên đăng nhập:</strong> @userServices.userDetailViewModel.TenDangNhap</p>
+                                    <p><strong>Bí danh:</strong> @userServices.userDetailViewModel.BietDanh</p>
+                                    <p><strong>Email:</strong> @userServices.userDetailViewModel.Email</p>
+                                </div>
+                                <div class="col-sm-6">
+                                    <p><strong>Số điện thoại:</strong> @userServices.userDetailViewModel.SoDienThoai</p>
+                                    <p><strong>Ngày sinh:</strong> @userServices.userDetailViewModel.NgaySinh</p>
+                                    <p><strong>Địa chỉ:</strong> @userServices.userDetailViewModel.DiaChi</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h6 class="fw-bold">Vai trò người dùng</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tên vai trò</th>
+                                    <th>Ngày gán</th>
+                                    <th>Dữ liệu mở rộng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (userServices.userDetailViewModel.VaiTros != null &&
+                                userServices.userDetailViewModel.VaiTros.Any())
+                                {
+                                    @foreach (var vaiTro in userServices.userDetailViewModel.VaiTros)
+                                    {
+                                        <tr>
+                                            <td>@vaiTro.Ten</td>
+                                            <td>@vaiTro.NgayGan</td>
+                                            <td>@vaiTro.DuLieuMoRong</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3">Chưa có vai trò</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <hr>
+
+                    <h6 class="fw-bold">Địa chỉ khác</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            @if (userServices.userDetailViewModel.DiaChiKhac != null &&
+                            userServices.userDetailViewModel.DiaChiKhac.Any())
+                            {
+                                @foreach (var diaChi in userServices.userDetailViewModel.DiaChiKhac)
+                                {
+                                    <div class="border p-2 mb-3 rounded small">
+                                        <p><strong>Địa chỉ chi tiết:</strong> @diaChi.DiaChiChiTiet</p>
+                                        <p><strong>Phường:</strong> @diaChi.Phuong</p>
+                                        <p><strong>Quận:</strong> @diaChi.Quan</p>
+                                        <p><strong>Thành phố:</strong> @diaChi.ThanhPho</p>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3">Chưa có địa chỉ khác</td>
+                                </tr>
+                            }
+                            
+                        </div>
+
+                    </div>
+                    <!-- Nút Quay lại/Thoát -->
+                    <div class="text-end mt-3">
+                        <a href="/users" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left-circle"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    @* private UserDetailViewModel userViewDetail; *@
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+        @* tìm Email từ list user load trong giao diện users *@
+        var email = userServices.usersViewModels.FirstOrDefault(u => u.Id == id)?.Email;// tìm user có Id bằng với id trên URL, rồi trả về Email của user
+        if (email != null)
+        {
+            
+            await userServices.GetDetailUser(token, email);
+
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userServices.OnChange -= StateHasChanged;
+    }
+}

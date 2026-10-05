@@ -1,0 +1,117 @@
+@page "/addrole"
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+@inject RoleServices roleServices;
+@inject NavigationManager navManager
+
+@inject IJSRuntime JS
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-primary">Thêm mới Vai Trò</h2>
+
+            <EditForm Model="addRole" OnValidSubmit="HandleSubmit" class="p-4 border rounded bg-white shadow-sm">
+                <!-- Tên vai trò -->
+                <div class="mb-3">
+                    <label for="tenVaiTro" class="form-label">Tên vai trò</label>
+                    <InputText id="tenVaiTro" class="form-control" @bind-Value="addRole.Ten" placeholder="Nhập tên vai trò" />
+                </div>
+
+                <!-- Dữ liệu mở rộng -->
+                <div class="mb-3">
+                    <label for="duLieuMoRong" class="form-label">Dữ liệu mở rộng</label>
+                    <InputTextArea id="duLieuMoRong" class="form-control" @bind-Value="addRole.DuLieuMoRong" rows="4"
+                                placeholder='Ghi chú chi tiết...' />
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="reset" class="btn btn-outline-secondary">Làm mới</button>
+                    <button type="submit" class="btn btn-primary">Thêm vai trò</button>
+                </div>
+            </EditForm>
+
+            <div class="text-end mt-3">
+                <a href="/rolespage" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Thoát
+                </a>
+            </div>
+
+            <!-- Modal Bootstrap -->
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title" id="successModalLabel">Thêm vai trò thành công</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Tên vai trò:</strong> @addRole.Ten</p>
+                            <p><strong>Dữ liệu mở rộng:</strong> @addRole.DuLieuMoRong</p>
+                            <p><strong>Ngày tạo:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private AddNewRoleViewModel addRole = new AddNewRoleViewModel();
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        roleServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        var result = await roleServices.AddNewRole(token, addRole);
+        if (result) // giả sử service trả về true khi thành công
+        {
+            // Gọi JS để bật modal Bootstrap
+            await JS.InvokeVoidAsync("bootstrapModalShow", "#successModal");
+        }
+    }    
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        roleServices.OnChange -= StateHasChanged;
+    }
+}

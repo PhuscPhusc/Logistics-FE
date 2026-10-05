@@ -1,0 +1,382 @@
+@page "/addshipmenttotrip"
+
+@inject HttpClient Http
+@implements IDisposable
+@inject OperationStaffServices operationStaffServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+<div class="d-flex flex-column min-vh-100 bg-light">
+
+    <!-- Mobile Navbar -->
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex flex-grow-1">
+
+        <!-- Desktop Sidebar -->
+        <div class="d-none d-lg-block">
+            <OperationStaffSidebarLayoutFull />
+        </div>
+
+
+        <!-- Main Content -->
+        <div class="container-fluid py-4">
+
+            <!-- HEADER -->
+            <div class="mb-4">
+
+                <h3 class="fw-bold mb-1">
+                    <i class="fas fa-truck-moving text-primary me-2"></i>
+                    Thêm đơn vận chuyển vào chuyến xe
+                </h3>
+
+                <p class="text-muted mb-0">
+                    Nhập mã chuyến xe và danh sách các đơn vận chuyển cần thêm.
+                </p>
+
+            </div>
+
+
+            <!-- SUCCESS -->
+            @if (showSuccess)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+
+                    <div class="d-flex align-items-start">
+
+                        <i class="fas fa-circle-check fs-5 me-3"></i>
+
+                        <div>
+                            <div class="fw-bold">
+                                Thêm đơn vận chuyển thành công
+                            </div>
+
+                            <div>
+                                Các đơn vận chuyển đã được thêm vào chuyến xe.
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-close" @onclick="() => showSuccess = false">
+                        </button>
+
+                    </div>
+
+                </div>
+            }
+
+
+            <!-- ERROR -->
+            @if (showError)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+
+                    <div class="d-flex align-items-start">
+
+                        <i class="fas fa-circle-exclamation fs-5 me-3"></i>
+
+                        <div>
+                            <div class="fw-bold">
+                                Thêm đơn vận chuyển thất bại
+                            </div>
+
+                            <div>
+                                Không thể thêm đơn vận chuyển vào chuyến xe.
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-close" @onclick="() => showError = false">
+                        </button>
+
+                    </div>
+
+                </div>
+            }
+
+
+            <!-- ================= FORM ================= -->
+
+            <EditForm Model="@addShipmentToTripViewModel" OnValidSubmit="@HandleSubmit">
+
+                <DataAnnotationsValidator />
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <!-- HEADER -->
+                    <div class="card-header bg-white border-0 p-4">
+
+                        <h5 class="fw-bold mb-1">
+
+                            <i class="fas fa-plus-circle text-primary me-2"></i>
+
+                            Thông tin thêm đơn
+
+                        </h5>
+
+                        <small class="text-muted">
+
+                            Nhập mã chuyến xe và danh sách mã đơn vận chuyển.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- BODY -->
+                    <div class="card-body p-4">
+
+
+                        <!-- MÃ CHUYẾN XE -->
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Mã chuyến xe
+
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+
+                            <div class="input-group">
+
+                                <span class="input-group-text bg-light">
+
+                                    <i class="fas fa-route"></i>
+
+                                </span>
+
+
+                                <InputText class="form-control" @bind-Value="addShipmentToTripViewModel.MaChuyenXe"
+                                           placeholder="Ví dụ: CX20260923-001" />
+
+                            </div>
+
+
+                            <div class="form-text">
+
+                                Nhập mã chuyến xe đã được tạo trong hệ thống.
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- MÃ ĐƠN VẬN CHUYỂN -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Mã đơn vận chuyển
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            @foreach (var maDon in danhSachMaDonVanChuyen)
+                            {
+                                <div class="input-group mb-2">
+
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-barcode"></i>
+                                    </span>
+
+                                    <input type="text" class="form-control" @bind="maDon.Ma"
+                                           placeholder="Nhập mã đơn vận chuyển" />
+
+                                    <button type="button" class="btn btn-outline-primary" @onclick="ThemDongMaDon">
+                                        <i class="fas fa-plus me-1"></i>
+                                        Thêm
+                                    </button>
+
+                                    @if (danhSachMaDonVanChuyen.Count > 1)
+                                    {
+                                        <button type="button" class="btn btn-outline-danger"
+                                                @onclick="() => XoaDongMaDon(maDon)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    }
+
+                                </div>
+                            }
+
+                            <div class="form-text">
+                                Có thể thêm nhiều đơn vận chuyển vào cùng một chuyến xe.
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- ACTION -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+
+
+                            <button type="button" class="btn btn-light border px-4" @onclick="LamLai">
+
+                                <i class="fas fa-rotate-left me-2"></i>
+
+                                Làm lại
+
+                            </button>
+
+
+                            <button type="submit" class="btn btn-primary px-4" disabled="@isLoading">
+
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+
+                                    <span>
+                                        Đang xử lý...
+                                    </span>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-truck-fast me-2"></i>
+
+                                    <span>
+                                        Thêm vào chuyến xe
+                                    </span>
+                                }
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </EditForm>
+        </div>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    private AddShipmentToTripViewModel addShipmentToTripViewModel
+        = new AddShipmentToTripViewModel();
+
+    private string? maDonVanChuyenInput;
+
+    private bool isLoading = false;
+
+    private bool showSuccess = false;
+
+    private bool showError = false;
+    private string successMessage = "";
+    private string errorMessage = "";
+
+    private class MaDonVanChuyenInput
+    {
+        public string Ma { get; set; } = "";
+    }
+
+    private List<MaDonVanChuyenInput> danhSachMaDonVanChuyen = new()
+    {
+        new MaDonVanChuyenInput()
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        operationStaffServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+    }
+
+
+    // =========================
+    // THÊM MÃ ĐƠN VÀO DANH SÁCH
+    // =========================
+
+    private void ThemDongMaDon()
+    {
+        danhSachMaDonVanChuyen.Add(new MaDonVanChuyenInput());
+    }
+
+
+    // =========================
+    // XÓA MÃ ĐƠN
+    // =========================
+
+    private void XoaDongMaDon(MaDonVanChuyenInput item)
+    {
+        danhSachMaDonVanChuyen.Remove(item);
+    }
+
+
+    // =========================
+    // SUBMIT FORM
+    // =========================
+
+    private async Task HandleSubmit()
+    {
+        showSuccess = false;
+        showError = false;
+
+        var token = await localStorage.GetItemAsync<string>("accessToken");
+
+        addShipmentToTripViewModel.lstMaDonVanChuyen =
+     danhSachMaDonVanChuyen
+         .Select(x => x.Ma.Trim())
+         .Where(x => !string.IsNullOrWhiteSpace(x))
+         .Distinct(StringComparer.OrdinalIgnoreCase)
+         .ToList();
+
+        try
+        {
+            var result = await operationStaffServices.AddShipmentToTrip(
+                token!,
+                addShipmentToTripViewModel
+            );
+
+            if (result)
+            {
+                showSuccess = true;
+                successMessage = "Thêm đơn vận chuyển vào chuyến xe thành công!";
+            }
+            else
+            {
+                showError = true;
+                errorMessage = "Thêm đơn vận chuyển thất bại.";
+            }
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    // =========================
+    // LÀM LẠI
+    // =========================
+
+    private void LamLai()
+    {
+        addShipmentToTripViewModel =
+            new AddShipmentToTripViewModel();
+
+        maDonVanChuyenInput = string.Empty;
+
+        showSuccess = false;
+        showError = false;
+    }
+
+
+    // =========================
+    // DISPOSE
+    // =========================
+
+    public void Dispose()
+    {
+        operationStaffServices.OnChange -= StateHasChanged;
+    }
+
+}

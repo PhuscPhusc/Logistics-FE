@@ -1,0 +1,87 @@
+@page "/warehouses"
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserAdminServices adminServices;
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-dark">Thông tin Kho</h2>
+            @foreach (var infoKho in adminServices.wareHouses)
+            {
+                <!-- Card hiển thị thông tin kho -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-danger text-dark">
+                        <strong>Kho chi tiết</strong>
+                    </div>
+
+
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <p><strong>Tên kho:</strong> <span class="badge bg-success">@infoKho.Ten</span></p>
+                            <p><strong>Địa chỉ:</strong> <span class="text-muted">@infoKho.DiaChi</span></p>
+                            <p><strong>Ngày tạo:</strong> @(infoKho.NgayTao?.ToString("dd/MM/yyyy HH:mm"))</p>
+                            <p><strong>Mã kho:</strong> <span class="badge bg-secondary">@infoKho.MaKho</span></p>
+                            <p><strong>Dữ liệu mở rộng:</strong> <span class="text-muted">@infoKho.DuLieuMoRong</span></p>
+                        </div>
+                        <div class="card-footer text-end">
+                            <NavLink class="btn btn-success" href="@($"/updatewarehouse/{infoKho.Id}")">
+                                Cập nhật
+                            </NavLink>
+
+                            @* <button class="btn btn-danger">Xóa</button> *@
+                        </div>
+                    </div>  
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        adminServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+        await adminServices.GetAllKho(token);
+    }
+
+    
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        adminServices.OnChange -= StateHasChanged;
+    }
+}

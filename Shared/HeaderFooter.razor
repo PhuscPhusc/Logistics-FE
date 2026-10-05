@@ -1,0 +1,112 @@
+@inherits LayoutComponentBase
+
+<!-- Footer dùng chung -->
+<div>
+    <!-- Header dùng chung -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand fw-bold fs-2" href="#">
+                <span class="text-danger">viettel</span> <span class="text-dark">post</span>
+            </a>
+
+            <!-- Nút toggle cho mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Menu -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="#">Dịch vụ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="#">Hỗ trợ khách hàng</a>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+    <div>
+        @Body
+    </div>
+
+   
+    <!-- Footer dùng chung -->
+    <footer class="bg-dark text-white mt-5 p-4">
+        <div class="container-fluid">
+            <!-- Thông tin công ty -->
+            <p class="fw-bold">TỔNG CÔNG TY CỔ PHẦN BƯU CHÍNH VIETTEL</p>
+            <p>Viettel Post là doanh nghiệp cung cấp dịch vụ chuyển phát hàng hoá, bưu kiện trong nước, quốc tế tại Việt Nam.</p>
+            <p><i class="fas fa-location-arrow"></i> Giấy chứng nhận Đăng ký Kinh doanh số: 0104093672 do Sở Tài chính thành phố Hà Nội cấp lần đầu ngày 03/07/2009, cấp thay đổi lần thứ 26 ngày 18/07/2025</p>
+            <p><i class="fas fa-location-arrow"></i> Giấy phép Bưu chính</p>
+            <p><i class="fas fa-location-arrow"></i> Văn bản xác nhận thông báo hoạt động bưu chính</p>
+            <hr class="border-light">
+
+            <!-- Grid chia cột -->
+            <div class="row">
+            <!-- Liên hệ -->
+            <div class="col-12 col-md-3 mb-3">
+                <h6>THÔNG TIN LIÊN HỆ</h6>
+                <p><i class="fas fa-map-marked-alt"></i> Tòa nhà Viettel Post, Số 2 Ngõ 15 Phố Duy Tân, Phường Cầu Giấy, Hà Nội</p>
+                <i class="fas fa-envelope"></i><a href="lnthienphuc136@gmail.com" class="text-white"> lnthienphuc136@gmail.com</a>
+                <div class="mt-3"> 
+                   <i class="fas fa-phone"></i> 19008095
+                </div>
+                
+            </div>
+
+            <!-- Về ViettelPost -->
+            <div class="col-6 col-md-3 mb-3">
+                <h6>Về ViettelPost</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white">Giới thiệu</a></li>
+                    <li><a href="#" class="text-white">Tin tức</a></li>
+                    <li><a href="#" class="text-white">Mạng lưới bưu cục</a></li>
+                    <li><a href="#" class="text-white">Tuyển dụng</a></li>
+                    <li><a href="#" class="text-white">Hợp tác</a></li>
+                    <li><a href="#" class="text-white">Kết nối API</a></li>
+                </ul>
+            </div>
+
+            <!-- Hỗ trợ khách hàng -->
+            <div class="col-6 col-md-3 mb-3">
+                <h6>Hỗ trợ khách hàng</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white ">Chat online với CSKH</a></li>
+                    <li><a href="#" class="text-white">Hướng dẫn sử dụng dịch vụ</a></li>
+                    <li><a href="#" class="text-white">Câu hỏi thường gặp</a></li>
+                    <li><a href="#" class="text-white">Điều khoản sử dụng</a></li>
+                    <li><a href="#" class="text-white">Chính sách bảo vệ dữ liệu cá nhân</a></li>
+                    <li><a href="#" class="text-white">Biểu mẫu BM01</a></li>
+                    <li><a href="#" class="text-white">Biểu mẫu BM02</a></li>
+                    <li><a href="#" class="text-white">Chính sách vận chuyển</a></li>
+                    <li><a href="#" class="text-white">Góp ý sản phẩm</a></li>
+                    <li><a href="#" class="text-white">Quy định bồi thường</a></li>
+                    <li><a href="#" class="text-white">Quy định hàng cấm gửi</a></li>
+                </ul>
+            </div>
+
+            <!-- Hợp tác -->
+            <div class="col-12 col-md-3 mb-3">
+                <h6>Hợp tác khách hàng doanh nghiệp</h6>
+                <p><i class="fas fa-phone"></i>  <a href="tel:0862358888" class="text-white">0837130604</a></p>
+                <p><i class="fas fa-envelope"></i> <a href="lnthienphuc136@gmail.com" class="text-white">lnthienphuc136@gmail.com</a></p>
+                <h6 class="mt-3">Hợp tác SME, shop online, cá nhân</h6>
+                <p><i class="fas fa-phone"></i>  <a href="tel:0983653311" class="text-white">0837130604</a></p>
+                <p><i class="fas fa-envelope"></i> <a href="lnthienphuc136@gmail.com" class="text-white">lnthienphuc136@gmail.com</a></p>
+            </div>
+            </div>
+
+            <hr class="border-light">
+            <p class="text-center small">© ViettelPost 2020. All rights reserved</p>
+        </div>
+    </footer>
+
+
+</div>

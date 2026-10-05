@@ -1,0 +1,120 @@
+@page "/adduserwarehouse"
+
+@inject HttpClient Http
+
+@implements IDisposable
+
+@inject UserAdminServices userAdminServices;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IJSRuntime JS
+@inject NavigationManager navManager
+
+
+<div class="d-flex flex-column">
+    <!-- Navbar luôn hiển thị -->
+    <div class="d-block d-lg-none ">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <AdminSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container my-5">
+            <h2 class="mb-4 text-primary">Phân công người dùng và kho</h2>
+
+            <form class="p-4 border rounded bg-white shadow-sm">
+                <!-- Tên đăng nhập người dùng -->
+                <div class="mb-3">
+                    <label for="tenDangNhap" class="form-label">Tên đăng nhập người dùng</label>
+                    <input type="text" class="form-control" @bind="userName" placeholder="Tên đăng nhập" />
+                </div>
+
+                <!-- Mã kho -->
+                <div class="mb-3">
+                    <label for="maKho" class="form-label">Mã kho</label>
+                    <input type="text" class="form-control" @bind="maKho" placeholder="Mã kho" />
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="reset" class="btn btn-outline-secondary">Làm mới</button>
+                    <button type="button" class="btn btn-primary"  @onclick="() => HandleSubmit(userName, maKho)">Phân công</button>
+                </div>
+            </form>
+
+            <div class="text-end mt-3">
+                <a href="/warehouses" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Thoát
+                </a>
+            </div>
+
+            <!-- Modal Bootstrap -->
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title" id="successModalLabel">Phân công người dùng và kho thành công</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Tên kho:</strong> @userAdminServices.addUserAndWareHouse.tenKho</p>
+                            <p><strong>Mã kho:</strong> @userAdminServices.addUserAndWareHouse.maKho</p>
+                            <p><strong>Tên người dùng:</strong> @userAdminServices.addUserAndWareHouse.tenNguoiDung</p>
+                            <p><strong>Ngày gán:</strong> @userAdminServices.addUserAndWareHouse.ngayGan?.ToString("dd/MM/yyyy HH:mm")</p>
+                            <p><strong>Người gán:</strong> @userAdminServices.addUserAndWareHouse.tenNguoiGan</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    private string? maKho { get; set; }
+    private string? userName { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        // Gọi API ở đây nếu cần
+        // var data = await Http.GetFromJsonAsync<T>("/api/endpoint");
+
+        // Nếu có dùng state service:
+        userAdminServices.OnChange += StateHasChanged;
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Nếu không có token thì đá về login
+            navManager.NavigateTo("/", true);
+        }
+    }
+
+    private async Task HandleSubmit(string userName, string maKho)
+    {
+        string? token = await localStorage.GetItemAsync<string>("accessToken");
+        var result = await userAdminServices.AddUserAndWarehouse(token, userName, maKho);
+        if (result) // giả sử service trả về true khi thành công
+        {
+            // Gọi JS để bật modal Bootstrap
+            await JS.InvokeVoidAsync("bootstrapModalShow", "#successModal");
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup nếu cần
+        userAdminServices.OnChange -= StateHasChanged;
+    }
+}

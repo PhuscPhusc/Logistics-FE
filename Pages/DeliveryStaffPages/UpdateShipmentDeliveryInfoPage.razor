@@ -1,0 +1,484 @@
+@page "/updateshipmentdelivery"
+
+@inject HttpClient Http
+@implements IDisposable
+@inject DeliveryStaffServices deliveryStaffServices
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navManager
+
+<div class="d-flex flex-column">
+
+    <!-- Navbar mobile -->
+    <div class="d-block d-lg-none">
+        <AdminNavbarLayout />
+    </div>
+
+    <div class="d-flex">
+
+        <!-- Sidebar desktop -->
+        <div class="d-none d-lg-block">
+            <DeliveryStaffSidebarLayoutFull />
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="container-fluid py-4">
+
+            <!-- Header -->
+            <div class="mb-4">
+                <h4 class="fw-bold mb-1">
+                    <i class="fas fa-truck me-2"></i>
+                    Cập nhật tình trạng đơn vận chuyển
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Cập nhật trạng thái cho các đơn vận chuyển
+                </p>
+            </div>
+
+            <EditForm Model="@updateForm" OnValidSubmit="@HandleSubmit">
+
+                <div class="row g-4">
+
+                    <!-- FORM CẬP NHẬT -->
+                    <div class="col-lg-5">
+
+                        <div class="card border-0 shadow-sm">
+
+                            <div class="card-header bg-white border-0 py-3">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-edit me-2"></i>
+                                    Cập nhật trạng thái
+                                </h5>
+                            </div>
+
+                            <div class="card-body">
+
+                                <!-- DANH SÁCH MÃ ĐƠN -->
+                                <div class="mb-4">
+
+                                    <label class="form-label fw-semibold">
+                                        Mã vận chuyển
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    @foreach (var item in danhSachMaDon)
+                                    {
+                                        <div class="input-group mb-2">
+
+                                            <span class="input-group-text bg-light">
+                                                <i class="fas fa-barcode"></i>
+                                            </span>
+
+                                            <input type="text" class="form-control" placeholder="Nhập mã vận chuyển"
+                                                   @bind="item.MaVanChuyen" />
+
+                                            <button type="button" class="btn btn-outline-primary" @onclick="ThemDongMaDon">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+
+                                            @if (danhSachMaDon.Count > 1)
+                                            {
+                                                <button type="button" class="btn btn-outline-danger"
+                                                        @onclick="() => XoaDongMaDon(item)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            }
+
+                                        </div>
+                                    }
+
+                                    <div class="form-text">
+                                        Có thể thêm nhiều đơn vận chuyển cùng lúc.
+                                    </div>
+
+                                </div>
+
+                                <!-- TRẠNG THÁI -->
+                                <div class="mb-4">
+
+                                    <label class="form-label fw-semibold">
+                                        Trạng thái đơn vận chuyển
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <InputSelect class="form-select" @bind-Value="updateForm.TrangThai">
+
+                                        <option value="">
+                                            -- Chọn trạng thái --
+                                        </option>
+
+                                        <option value="Đang giao">
+                                            Đang giao
+                                        </option>
+
+                                        <option value="Đã giao">
+                                            Đã giao
+                                        </option>
+
+                                        <option value="Giao thất bại">
+                                            Giao thất bại
+                                        </option>
+
+                                    </InputSelect>
+
+                                </div>
+
+                                <!-- BUTTON -->
+                                <button type="submit" class="btn btn-primary w-100" disabled="@isLoading">
+
+                                    @if (isLoading)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                        <span>Đang cập nhật...</span>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-sync-alt me-2"></i>
+                                        <span>Cập nhật trạng thái</span>
+                                    }
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- THÔNG TIN ĐƠN -->
+                    <div class="col-lg-7">
+
+                        <div class="card border-0 shadow-sm">
+
+                            <div class="card-header bg-white border-0 py-3">
+
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-box me-2"></i>
+                                    Thông tin đơn vận chuyển
+                                </h5>
+
+                            </div>
+
+                            <div class="card-body">
+
+                                @if (deliveryStaffServices.infoTrangThaiShipmentViewModel != null
+                                    && !string.IsNullOrEmpty(
+                                        deliveryStaffServices.infoTrangThaiShipmentViewModel.MaVanChuyen))
+                                {
+                                    var info =
+                                        deliveryStaffServices.infoTrangThaiShipmentViewModel;
+
+                                    <div class="row g-3 mb-4">
+
+                                        <!-- Mã -->
+                                        <div class="col-md-6">
+                                            <div class="p-3 bg-light rounded">
+
+                                                <div class="text-muted small mb-1">
+                                                    Mã vận chuyển
+                                                </div>
+
+                                                <div class="fw-bold">
+                                                    @info.MaVanChuyen
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <!-- Trạng thái -->
+                                        <div class="col-md-6">
+                                            <div class="p-3 bg-light rounded">
+
+                                                <div class="text-muted small mb-1">
+                                                    Trạng thái
+                                                </div>
+
+                                                <span class="badge bg-warning text-dark">
+                                                    @info.TrangThaiDonVanChuyen
+                                                </span>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row g-3 mb-4">
+
+                                        <!-- Người gửi -->
+                                        <div class="col-md-6">
+
+                                            <div class="border rounded p-3 h-100">
+
+                                                <div class="text-muted small mb-2">
+                                                    <i class="fas fa-user me-1"></i>
+                                                    Người gửi
+                                                </div>
+
+                                                <h6 class="fw-bold mb-0">
+                                                    @info.TenNguoiGui
+                                                </h6>
+
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Người nhận -->
+                                        <div class="col-md-6">
+
+                                            <div class="border rounded p-3 h-100">
+
+                                                <div class="text-muted small mb-2">
+                                                    <i class="fas fa-user-check me-1"></i>
+                                                    Người nhận
+                                                </div>
+
+                                                <h6 class="fw-bold mb-0">
+                                                    @info.TenNguoiNhan
+                                                </h6>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Địa chỉ -->
+                                    <div class="mb-3">
+
+                                        <div class="text-muted small mb-1">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            Địa chỉ người nhận
+                                        </div>
+
+                                        <div class="fw-semibold">
+                                            @info.DiaChiNguoiNhan
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Số điện thoại -->
+                                    <div class="mb-3">
+
+                                        <div class="text-muted small mb-1">
+                                            <i class="fas fa-phone me-1"></i>
+                                            Số điện thoại người nhận
+                                        </div>
+
+                                        <div class="fw-semibold">
+                                            @info.SoDienThoaiNguoiNhan
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Tổng tiền -->
+                                    <div>
+
+                                        <div class="text-muted small mb-1">
+                                            <i class="fas fa-money-bill-wave me-1"></i>
+                                            Tổng tiền
+                                        </div>
+
+                                        <div class="fw-bold fs-5">
+                                            @info.TongTien?.ToString("N0") VNĐ
+                                        </div>
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-center text-muted py-5">
+
+                                        <i class="fas fa-box-open fa-3x mb-3"></i>
+
+                                        <p class="mb-0">
+                                            Chưa có thông tin đơn vận chuyển
+                                        </p>
+
+                                    </div>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </EditForm>
+
+        </div>
+
+    </div>
+</div>
+
+
+<!-- POPUP THÔNG BÁO -->
+@if (showSuccessPopup)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow">
+
+                <div class="modal-body text-center p-4">
+
+                    <div class="mb-3">
+                        <i class="fas fa-check-circle text-success fa-4x"></i>
+                    </div>
+
+                    <h5 class="fw-bold mb-2">
+                        Cập nhật thành công
+                    </h5>
+
+                    <p class="text-muted mb-4">
+                        Các đơn vận chuyển đã được cập nhật trạng thái thành công.
+                    </p>
+
+                    <button type="button" class="btn btn-success px-4" @onclick="DongPopup">
+
+                        <i class="fas fa-check me-2"></i>
+                        Đóng
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+@code {
+
+    // Model dùng cho EditForm
+    private UpdateTinhTrangShipmentViewModel updateForm = new();
+
+    // Danh sách các dòng nhập mã đơn
+    private List<MaDonInput> danhSachMaDon = new()
+    {
+        new MaDonInput()
+    };
+
+    private bool isLoading = false;
+
+    private bool showSuccessPopup = false;
+
+
+    // Class đại diện cho một dòng nhập mã đơn
+    private class MaDonInput
+    {
+        public string? MaVanChuyen { get; set; }
+    }
+
+
+    // Thêm một dòng nhập mã đơn
+    private void ThemDongMaDon()
+    {
+        danhSachMaDon.Add(new MaDonInput());
+    }
+
+
+    // Xóa dòng nhập mã đơn
+    private void XoaDongMaDon(MaDonInput item)
+    {
+        danhSachMaDon.Remove(item);
+    }
+
+
+    // Đóng popup
+    private void DongPopup()
+    {
+        showSuccessPopup = false;
+    }
+
+
+    // Submit form
+    private async Task HandleSubmit()
+    {
+        if (isLoading)
+            return;
+
+        var danhSachMaDonHopLe = danhSachMaDon
+            .Select(x => x.MaVanChuyen?.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (!danhSachMaDonHopLe.Any())
+            return;
+
+        if (string.IsNullOrWhiteSpace(updateForm.TrangThai))
+            return;
+
+        var token =
+            await localStorage.GetItemAsync<string>("accessToken");
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            navManager.NavigateTo("/", true);
+            return;
+        }
+
+        isLoading = true;
+
+        try
+        {
+            bool tatCaThanhCong = true;
+
+            foreach (var maDon in danhSachMaDonHopLe)
+            {
+                var result =
+                    await deliveryStaffServices.UpdateTinhTrangShipment(
+                        token,
+                        maDon!,
+                        new UpdateTinhTrangShipmentViewModel
+                        {
+                            TrangThai = updateForm.TrangThai
+                        });
+
+                if (!result)
+                {
+                    tatCaThanhCong = false;
+                    break;
+                }
+            }
+
+            if (tatCaThanhCong)
+            {
+                showSuccessPopup = true;
+            }
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        deliveryStaffServices.OnChange += StateHasChanged;
+
+        var token =
+            await localStorage.GetItemAsync<string>("accessToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            navManager.NavigateTo("/", true);
+            return;
+        }
+    }
+
+
+
+
+    public void Dispose()
+    {
+        deliveryStaffServices.OnChange -= StateHasChanged;
+    }
+}
